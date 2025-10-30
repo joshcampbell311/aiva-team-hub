@@ -1,0 +1,5288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVA Team Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-modal-content {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-modal h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+            text-align: center;
+        }
+
+        .login-modal p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .login-modal input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-modal button {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .login-modal button:hover {
+            background: var(--primary-dark);
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .login-error.active {
+            display: block;
+        }
+
+        .username-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .username-modal.active {
+            display: flex;
+        }
+
+        .username-modal-content {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .username-modal h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+        }
+
+        .username-modal p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .username-modal select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .username-modal button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        header {
+            background: var(--surface);
+            padding: 1.25rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .logout-btn:hover {
+            background: var(--border);
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            width: 250px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .new-week-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .week-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .week-item {
+            padding: 0.875rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+        }
+
+        .week-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .week-item-delete {
+            opacity: 0;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .week-item:hover .week-item-delete {
+            opacity: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            padding: 0 2rem;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-tabs-right {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .sub-tab {
+            padding: 0.625rem 1.25rem;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .sub-tab.active {
+            color: white;
+            border-color: transparent;
+        }
+
+        .sub-tab[data-subtab="general"].active {
+            background: var(--primary);
+        }
+
+        .sub-tab[data-subtab="communicator"].active {
+            background: #6E91D6;
+        }
+
+        .sub-tab[data-subtab="w3"].active {
+            background: #FF6D63;
+        }
+
+        .sub-tab[data-subtab="davey"].active {
+            background: #008C72;
+        }
+
+        .sub-tab[data-subtab="aiva"].active {
+            background: #000000;
+        }
+
+        .quick-add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .inline-add-form {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .inline-add-form.active {
+            display: block;
+        }
+
+        .inline-add-form input,
+        .inline-add-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            font-family: inherit;
+        }
+
+        .inline-add-form textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .inline-form-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-small.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-small.secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .user-section {
+            margin-bottom: 2rem;
+        }
+
+        .user-section-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .agenda-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+
+        .agenda-item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 0.125rem;
+        }
+
+        .agenda-item-content {
+            flex: 1;
+        }
+
+        .agenda-item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .agenda-item-description {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .agenda-item-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .link-badge {
+            background: var(--bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .agenda-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg);
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+        
+        .action-btn svg * {
+            pointer-events: none;
+        }
+
+        .emoji-reactions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .reaction {
+            background: var(--bg);
+            padding: 0.25rem 0.625rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .reaction:hover::after {
+            content: attr(data-users);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            z-index: 1000;
+        }
+
+        .comments {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .comment {
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .ticket {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .ticket-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .question-generator {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 2rem;
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .generate-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .response-thread {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .response-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .response-author {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .response-text {
+            margin-bottom: 0.75rem;
+        }
+
+        .resource-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            cursor: move;
+        }
+        
+        .resource-item.dragging {
+            opacity: 0.5;
+        }
+        
+        .resource-item.drag-over {
+            border-top: 3px solid var(--primary);
+        }
+
+        .resource-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .data-controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 500;
+        }
+
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+        
+        .icon-btn svg * {
+            pointer-events: none;
+        }
+
+        .btn-archive-toggle {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes highlight {
+            0%, 100% { background: transparent; }
+            50% { background: #fef3c7; }
+        }
+
+        .highlight-item {
+            animation: highlight 1.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal active">
+        <div class="login-modal-content">
+            <h2>Welcome to AIVA Hub! 👋</h2>
+            <p>Please sign in to continue</p>
+            <input type="email" id="loginEmail" placeholder="email@aiva.org">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button id="loginBtn">Sign In</button>
+            <div class="login-error" id="loginError">Invalid email or password</div>
+        </div>
+    </div>
+
+    <!-- Username Selection Modal -->
+    <div id="usernameModal" class="username-modal">
+        <div class="username-modal-content">
+            <h2>Welcome to AIVA Hub! 👋</h2>
+            <p>Please select your name to get started</p>
+            <select id="usernameSelect">
+                <option value="">Choose your name...</option>
+                <option value="Josh">Josh (Reviewer/Approver)</option>
+                <option value="Kari">Kari (Juror Manager)</option>
+                <option value="Anika">Anika (Social Media Manager)</option>
+                <option value="Bri">Bri (Copywriter)</option>
+            </select>
+            <button id="setUsernameBtn">Let's Go!</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">A</div>
+            <span>AIVA Hub</span>
+        </div>
+        <div class="header-right">
+            <div class="user-badge">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span id="currentUsername"></span>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+            <div>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search anything...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <button class="new-week-btn" id="newWeekBtn">
+                <span>➕</span>
+                <span>New Week</span>
+            </button>
+            <div class="week-list" id="weekList"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs" id="mainNav"></nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Agenda Section -->
+                <div id="agenda" class="section active">
+                    <div class="sub-tabs" id="agendaSubTabs"></div>
+                    <div id="agendaContent"></div>
+                </div>
+
+                <!-- Weekly Reporting Section -->
+                <div id="reporting" class="section">
+                    <div id="reportingContent"></div>
+                </div>
+
+                <!-- Who Knew Section -->
+                <div id="whoknew" class="section">
+                    <div class="question-generator">
+                        <div class="question-text" id="currentQuestion">Click below to generate a random question!</div>
+                        <button class="generate-btn" id="generateQuestionBtn">🎲 Generate Question</button>
+                    </div>
+                    <div id="responsesContent"></div>
+                </div>
+
+                <!-- Important Links Section -->
+                <div id="links" class="section">
+                    <div class="sub-tabs" id="linksSubTabs"></div>
+                    <div id="linksContent"></div>
+                </div>
+
+                <!-- Reviews/Approvals Section -->
+                <div id="reviews" class="section">
+                    <div id="reviewsContent"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Data Controls -->
+    <div class="data-controls">
+        <button class="icon-btn" id="downloadBtn" title="Download Backup">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        </button>
+        <button class="icon-btn" id="uploadBtnTrigger" title="Upload Backup">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        </button>
+        <input type="file" id="uploadInput" style="display: none;" accept=".json">
+    </div>
+
+    <!-- New Week Modal -->
+    <div id="newWeekModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Week</h3>
+                <button class="modal-close" data-modal="newWeekModal">×</button>
+            </div>
+            <div class="form-group">
+            <label>Links (comma-separated)</label>
+            <input type="text" id="editLinks" value="${item.links.join(', ')}">
+        </div>
+        <button class="btn-primary" data-action="saveAgendaEdit" data-id="${id}">Save Changes</button>
+    `;
+    document.getElementById('genericModal').classList.add('active');
+}
+
+function saveAgendaEdit(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    
+    item.title = document.getElementById('editTitle').value;
+    item.description = document.getElementById('editDescription').value;
+    item.links = document.getElementById('editLinks').value.split(',').map(l => l.trim()).filter(l => l);
+    
+    saveData();
+    renderAgenda();
+    closeModal('genericModal');
+}
+
+function deleteAgendaItem(id) {
+    showConfirmDialog('Delete this agenda item?', function() {
+        const week = state.data.weeks.find(w => w.id === state.currentWeek);
+        if (week && week.agenda[state.currentSubTab]) {
+            week.agenda[state.currentSubTab] = week.agenda[state.currentSubTab].filter(i => i.id !== id);
+            saveData();
+            renderAgenda();
+        }
+    });
+}
+
+// Reporting functions
+function renderReporting() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    const users = ['Josh', 'Kari', 'Anika', 'Bri'];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="reportForm">
+            <span>+</span>
+            <span>Add Your Weekly Report</span>
+        </button>
+        <div class="inline-add-form" id="reportForm">
+            <textarea id="reportingText" style="min-height: 120px;" placeholder="Share your weekly findings, metrics, and highlights..."></textarea>
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="reportForm">Cancel</button>
+                <button class="btn-small primary" data-action="addReport">Post Report</button>
+            </div>
+        </div>
+    `;
+
+    users.forEach(user => {
+        const report = week.reporting[user];
+        if (!report) return;
+        
+        html += `
+            <div class="user-section">
+                <div class="user-section-header">
+                    <div class="user-avatar" style="background: ${state.userColors[user]}; width: 28px; height: 28px; font-size: 0.75rem;">${user.charAt(0)}</div>
+                    ${user}
+                </div>
+                <div class="agenda-item">
+                    <div style="white-space: pre-wrap;">${report.text}</div>
+                    ${user === state.currentUser ? `
+                        <div class="agenda-item-actions" style="margin-top: 1rem;">
+                            <button class="action-btn" data-action="editReport" data-value="${user}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+                            <button class="action-btn" data-action="deleteReport" data-value="${user}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById('reportingContent').innerHTML = html;
+}
+
+function addReport() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const text = document.getElementById('reportingText').value.trim();
+    
+    if (!text) return;
+
+    week.reporting[state.currentUser] = {
+        text,
+        timestamp: Date.now()
+    };
+    
+    saveData();
+    renderReporting();
+}
+
+function editReport(user) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const report = week.reporting[user];
+    
+    document.getElementById('genericModalTitle').textContent = 'Edit Report';
+    document.getElementById('genericModalContent').innerHTML = `
+        <div class="form-group">
+            <label>Report Content</label>
+            <textarea id="editReportText" style="min-height: 150px;">${report.text}</textarea>
+        </div>
+        <button class="btn-primary" data-action="saveReportEdit" data-value="${user}">Save Changes</button>
+    `;
+    document.getElementById('genericModal').classList.add('active');
+}
+
+function saveReportEdit(user) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    week.reporting[user].text = document.getElementById('editReportText').value;
+    saveData();
+    renderReporting();
+    closeModal('genericModal');
+}
+
+function deleteReport(user) {
+    showConfirmDialog('Delete your report?', function() {
+        const week = state.data.weeks.find(w => w.id === state.currentWeek);
+        delete week.reporting[user];
+        saveData();
+        renderReporting();
+    });
+}
+
+// Who Knew functions
+function renderWhoKnew() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    if (!week.question) {
+        week.question = {
+            text: state.questions[Math.floor(Math.random() * state.questions.length)],
+            responses: []
+        };
+        saveData();
+    }
+
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="responseForm">
+            <span>+</span>
+            <span>Share Your Response</span>
+        </button>
+        <div class="inline-add-form" id="responseForm">
+            <textarea id="responseText" placeholder="Your answer..." style="min-height: 80px;"></textarea>
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="responseForm">Cancel</button>
+                <button class="btn-small primary" data-action="addResponse">Post Response</button>
+            </div>
+        </div>
+        <div class="response-thread">
+    `;
+
+    week.question.responses.forEach(response => {
+        html += `
+            <div class="response-item">
+                <div class="response-author">
+                    <div class="user-avatar" style="background: ${state.userColors[response.user]}; width: 24px; height: 24px; font-size: 0.75rem; display: inline-flex; margin-right: 0.5rem;">${response.user.charAt(0)}</div>
+                    ${response.user}
+                </div>
+                <div class="response-text">${response.text}</div>
+                <div class="agenda-item-actions">
+                    <button class="action-btn" data-action="addResponseReaction" data-id="${response.id}" data-value="👍">👍</button>
+                    <button class="action-btn" data-action="addResponseReaction" data-id="${response.id}" data-value="❤️">❤️</button>
+                    <button class="action-btn" data-action="addResponseReaction" data-id="${response.id}" data-value="😂">😂</button>
+                    ${response.user === state.currentUser ? `
+                        <button class="action-btn" data-action="deleteResponse" data-id="${response.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    ` : ''}
+                </div>
+                ${Object.keys(response.reactions || {}).length > 0 ? `
+                    <div class="emoji-reactions">
+                        ${Object.entries(response.reactions).map(([emoji, users]) => `
+                            <span class="reaction" data-users="${users.join(', ')}">${emoji} ${users.length}</span>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                <div class="comments">
+                    ${(response.comments || []).map(comment => `
+                        <div class="comment">
+                            <span class="comment-author">${comment.user}:</span> ${comment.text}
+                        </div>
+                    `).join('')}
+                    <div class="comment-input">
+                        <input type="text" placeholder="Add a comment..." id="response-comment-${response.id}">
+                        <button class="btn-primary" data-action="addResponseComment" data-id="${response.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    
+    document.getElementById('responsesContent').innerHTML = html;
+    document.getElementById('currentQuestion').textContent = week.question.text;
+}
+
+function generateQuestion() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    week.question = {
+        text: state.questions[Math.floor(Math.random() * state.questions.length)],
+        responses: []
+    };
+    saveData();
+    renderWhoKnew();
+}
+
+function addResponse() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const text = document.getElementById('responseText').value.trim();
+    
+    if (!text) return;
+
+    week.question.responses.push({
+        id: Date.now(),
+        user: state.currentUser,
+        text,
+        reactions: {},
+        comments: []
+    });
+    
+    saveData();
+    renderWhoKnew();
+}
+
+function addResponseReaction(id, emoji) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const response = week.question.responses.find(r => r.id === id);
+    if (!response.reactions[emoji]) {
+        response.reactions[emoji] = [];
+    }
+    if (!response.reactions[emoji].includes(state.currentUser)) {
+        response.reactions[emoji].push(state.currentUser);
+    }
+    saveData();
+    renderWhoKnew();
+}
+
+function addResponseComment(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const response = week.question.responses.find(r => r.id === id);
+    const input = document.getElementById(`response-comment-${id}`);
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    if (!response.comments) {
+        response.comments = [];
+    }
+
+    response.comments.push({
+        user: state.currentUser,
+        text,
+        timestamp: Date.now()
+    });
+    saveData();
+    renderWhoKnew();
+}
+
+function deleteResponse(id) {
+    showConfirmDialog('Delete your response?', function() {
+        const week = state.data.weeks.find(w => w.id === state.currentWeek);
+        if (week && week.question) {
+            week.question.responses = week.question.responses.filter(r => r.id !== id);
+            saveData();
+            renderWhoKnew();
+        }
+    });
+}
+
+// Links functions
+function renderLinks() {
+    const links = state.data.links[state.currentLinkSubTab] || [];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="linkForm">
+            <span>+</span>
+            <span>Add Resource</span>
+        </button>
+        <div class="inline-add-form" id="linkForm">
+            <input type="text" id="linkTitle" placeholder="Resource title">
+            <textarea id="linkDescription" placeholder="Description" style="min-height: 60px;"></textarea>
+            <input type="text" id="linkUrls" placeholder="https://example.com, https://another.com">
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="linkForm">Cancel</button>
+                <button class="btn-small primary" data-action="addResource">Add Resource</button>
+            </div>
+        </div>
+        <div id="linksContainer">
+    `;
+
+    links.forEach((link, index) => {
+        html += `
+            <div class="resource-item" draggable="true" data-link-id="${link.id}" data-index="${index}">
+                <div class="resource-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="cursor: move;">☰</span>
+                    ${link.title}
+                </div>
+                <div class="agenda-item-description">${link.description}</div>
+                <div class="agenda-item-links" style="margin-top: 0.75rem;">
+                    ${link.urls.map(url => `<a href="${url.startsWith('http') ? url : 'https://' + url}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 Link</a>`).join('')}
+                </div>
+                <div class="agenda-item-actions" style="margin-top: 1rem;">
+                    <button class="action-btn" data-action="editResource" data-id="${link.id}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button class="action-btn" data-action="deleteResource" data-id="${link.id}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    
+    document.getElementById('linksContent').innerHTML = html;
+    setupDragAndDrop();
+}
+
+function setupDragAndDrop() {
+    const container = document.getElementById('linksContainer');
+    if (!container) return;
+    
+    const items = container.querySelectorAll('.resource-item');
+    
+    items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragleave', handleDragLeave);
+    });
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.resource-item').forEach(item => {
+        item.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    if (draggedElement !== this) {
+        const draggedId = parseInt(draggedElement.getAttribute('data-link-id'));
+        const targetId = parseInt(this.getAttribute('data-link-id'));
+        
+        const links = state.data.links[state.currentLinkSubTab];
+        const draggedIndex = links.findIndex(l => l.id === draggedId);
+        const targetIndex = links.findIndex(l => l.id === targetId);
+        
+        // Remove dragged item and insert at new position
+        const [draggedItem] = links.splice(draggedIndex, 1);
+        links.splice(targetIndex, 0, draggedItem);
+        
+        saveData();
+        renderLinks();
+    }
+    
+    return false;
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function addResource() {
+    const title = document.getElementById('linkTitle').value.trim();
+    const description = document.getElementById('linkDescription').value.trim();
+    const urls = document.getElementById('linkUrls').value.split(',').map(u => u.trim()).filter(u => u);
+    
+    if (!title || !urls.length) return;
+
+    if (!state.data.links[state.currentLinkSubTab]) {
+        state.data.links[state.currentLinkSubTab] = [];
+    }
+    
+    state.data.links[state.currentLinkSubTab].push({
+        id: Date.now(),
+        title,
+        description,
+        urls
+    });
+    
+    saveData();
+    renderLinks();
+}
+
+function editResource(id) {
+    const resource = state.data.links[state.currentLinkSubTab].find(l => l.id === id);
+    
+    document.getElementById('genericModalTitle').textContent = 'Edit Resource';
+    document.getElementById('genericModalContent').innerHTML = `
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="editResourceTitle" value="${resource.title}">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="editResourceDescription">${resource.description}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Links (comma-separated)</label>
+            <input type="text" id="editResourceUrls" value="${resource.urls.join(', ')}">
+        </div>
+        <button class="btn-primary" data-action="saveResourceEdit" data-id="${id}">Save Changes</button>
+    `;
+    document.getElementById('genericModal').classList.add('active');
+}
+
+function saveResourceEdit(id) {
+    const resource = state.data.links[state.currentLinkSubTab].find(l => l.id === id);
+    resource.title = document.getElementById('editResourceTitle').value;
+    resource.description = document.getElementById('editResourceDescription').value;
+    resource.urls = document.getElementById('editResourceUrls').value.split(',').map(u => u.trim()).filter(u => u);
+    saveData();
+    renderLinks();
+    closeModal('genericModal');
+}
+
+function deleteResource(id) {
+    showConfirmDialog('Delete this resource?', function() {
+        state.data.links[state.currentLinkSubTab] = state.data.links[state.currentLinkSubTab].filter(l => l.id !== id);
+        saveData();
+        renderLinks();
+    });
+}
+
+// Reviews functions
+function renderReviews() {
+    const statuses = ['Ready to Review', 'In Review', 'Reviewed/Rework', 'Approved'];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="reviewForm">
+            <span>+</span>
+            <span>Submit for Review</span>
+        </button>
+        <div class="inline-add-form" id="reviewForm">
+            <input type="text" id="reviewProjectName" placeholder="Project name">
+            <textarea id="reviewDescription" placeholder="Description" style="min-height: 60px;"></textarea>
+            <input type="text" id="reviewLinks" placeholder="Links (comma-separated)">
+            <input type="date" id="reviewDate">
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="reviewForm">Cancel</button>
+                <button class="btn-small primary" data-action="submitReview">Submit for Review</button>
+            </div>
+        </div>
+        <button class="btn-archive-toggle" data-action="viewArchive">
+            📁 View Archive
+        </button>
+    `;
+
+    statuses.forEach(status => {
+        const tickets = state.data.reviews.filter(r => r.status === status && !r.archived);
+        if (tickets.length === 0) return;
+
+        html += `<h3 style="margin: 2rem 0 1rem 0; color: var(--primary);">${status}</h3>`;
+        tickets.forEach(ticket => {
+            html += `
+                <div class="ticket">
+                    <div class="ticket-header">
+                        <div>
+                            <div class="ticket-title">${ticket.projectName}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem;">
+                                By ${ticket.user} | Due: ${new Date(ticket.neededBy).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <span class="ticket-status">${status}</span>
+                    </div>
+                    <div class="agenda-item-description" style="margin: 1rem 0;">${ticket.description}</div>
+                    ${ticket.links && ticket.links.length > 0 ? `
+                        <div class="agenda-item-links">
+                            ${ticket.links.map(link => `<a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 Link</a>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${ticket.comments && ticket.comments.length > 0 ? `
+                        <div class="comments" style="margin-top: 1rem;">
+                            ${ticket.comments.map(comment => `
+                                <div class="comment">
+                                    <span class="comment-author">${comment.user}:</span> ${comment.text}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="comment-input" style="margin-top: 1rem;">
+                        <input type="text" placeholder="Add a comment..." id="review-comment-${ticket.id}">
+                        <button class="btn-primary" data-action="addReviewComment" data-id="${ticket.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </button>
+                    </div>
+                    <div class="agenda-item-actions" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        ${state.currentUser === 'Josh' ? `
+                            <select data-review-id="${ticket.id}" style="padding: 0.5rem; border: 2px solid var(--border); border-radius: 8px; margin-right: 0.5rem;">
+                                <option value="">Change Status...</option>
+                                <option value="Ready to Review">Ready to Review</option>
+                                <option value="In Review">In Review</option>
+                                <option value="Reviewed/Rework">Reviewed/Rework</option>
+                                <option value="Approved">Approved</option>
+                            </select>
+                        ` : ''}
+                        <button class="action-btn" data-action="archiveReview" data-id="${ticket.id}">📁 Archive</button>
+                        <button class="action-btn" data-action="deleteReview" data-id="${ticket.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    document.getElementById('reviewsContent').innerHTML = html;
+}
+
+function submitReview() {
+    const projectName = document.getElementById('reviewProjectName').value.trim();
+    const description = document.getElementById('reviewDescription').value.trim();
+    const links = document.getElementById('reviewLinks').value.split(',').map(l => l.trim()).filter(l => l);
+    const neededBy = document.getElementById('reviewDate').value;
+    
+    if (!projectName || !description || !neededBy) return;
+
+    state.data.reviews.push({
+        id: Date.now(),
+        user: state.currentUser,
+        projectName,
+        description,
+        links,
+        neededBy,
+        status: 'Ready to Review',
+        comments: [],
+        archived: false
+    });
+    
+    saveData();
+    renderReviews();
+}
+
+function updateReviewStatus(id, status) {
+    if (!status) return;
+    const review = state.data.reviews.find(r => r.id === id);
+    if (review) {
+        review.status = status;
+        saveData();
+        renderReviews();
+    }
+}
+
+function addReviewComment(id) {
+    const review = state.data.reviews.find(r => r.id === id);
+    const input = document.getElementById(`review-comment-${id}`);
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    if (!review.comments) {
+        review.comments = [];
+    }
+
+    review.comments.push({
+        user: state.currentUser,
+        text,
+        timestamp: Date.now()
+    });
+    saveData();
+    renderReviews();
+}
+
+function archiveReview(id) {
+    const review = state.data.reviews.find(r => r.id === id);
+    if (review) {
+        review.archived = !review.archived;
+        saveData();
+        
+        if (document.getElementById('genericModal').classList.contains('active')) {
+            viewArchive();
+        } else {
+            renderReviews();
+        }
+    }
+}
+
+function deleteReview(id) {
+    showConfirmDialog('Delete this review request?', function() {
+        state.data.reviews = state.data.reviews.filter(r => r.id !== id);
+        saveData();
+        
+        if (document.getElementById('genericModal').classList.contains('active')) {
+            viewArchive();
+        } else {
+            renderReviews();
+        }
+    });
+}
+
+function viewArchive() {
+    const archived = state.data.reviews.filter(r => r.archived);
+    
+    document.getElementById('genericModalTitle').textContent = 'Archived Reviews';
+    
+    if (archived.length === 0) {
+        document.getElementById('genericModalContent').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">No archived reviews</p>';
+    } else {
+        let html = '';
+        archived.forEach(ticket => {
+            html += `
+                <div class="ticket" style="margin-bottom: 1rem; opacity: 0.9;">
+                    <div class="ticket-header">
+                        <div>
+                            <div class="ticket-title">${ticket.projectName}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem;">
+                                By ${ticket.user} | ${ticket.status}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="agenda-item-description" style="margin: 1rem 0;">${ticket.description}</div>
+                    <div class="agenda-item-actions" style="margin-top: 1rem;">
+                        <button class="action-btn" data-action="archiveReview" data-id="${ticket.id}">📂 Unarchive</button>
+                        <button class="action-btn" data-action="deleteReview" data-id="${ticket.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('genericModalContent').innerHTML = html;
+    }
+    
+    document.getElementById('genericModal').classList.add('active');
+}
+
+// Search functions
+function performSearch() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!query) return;
+
+    const results = [];
+
+    state.data.weeks.forEach(week => {
+        Object.entries(week.agenda).forEach(([category, items]) => {
+            items.forEach(item => {
+                if (item.title.toLowerCase().includes(query) || 
+                    (item.description && item.description.toLowerCase().includes(query))) {
+                    results.push({
+                        type: 'Agenda',
+                        week: week.date,
+                        weekId: week.id,
+                        category,
+                        itemId: item.id,
+                        title: item.title,
+                        context: item.description
+                    });
+                }
+            });
+        });
+
+        Object.entries(week.reporting).forEach(([user, report]) => {
+            if (report.text.toLowerCase().includes(query)) {
+                results.push({
+                    type: 'Report',
+                    week: week.date,
+                    weekId: week.id,
+                    user: user,
+                    title: `${user}'s Report`,
+                    context: report.text.substring(0, 100) + '...'
+                });
+            }
+        });
+
+        if (week.question) {
+            week.question.responses.forEach(response => {
+                if (response.text.toLowerCase().includes(query)) {
+                    results.push({
+                        type: 'Response',
+                        week: week.date,
+                        weekId: week.id,
+                        itemId: response.id,
+                        title: `${response.user}'s response`,
+                        context: response.text.substring(0, 100) + '...'
+                    });
+                }
+            });
+        }
+    });
+
+    // Search all link categories
+    Object.entries(state.data.links).forEach(([category, links]) => {
+        links.forEach(link => {
+            if (link.title.toLowerCase().includes(query) || 
+                link.description.toLowerCase().includes(query)) {
+                results.push({
+                    type: 'Resource',
+                    category: category,
+                    itemId: link.id,
+                    title: link.title,
+                    context: link.description
+                });
+            }
+        });
+    });
+
+    state.data.reviews.forEach(review => {
+        if (review.projectName.toLowerCase().includes(query) || 
+            review.description.toLowerCase().includes(query)) {
+            results.push({
+                type: 'Review',
+                itemId: review.id,
+                archived: review.archived,
+                title: review.projectName,
+                context: review.description
+            });
+        }
+    });
+
+    displaySearchResults(results);
+}
+
+function displaySearchResults(results) {
+    let html = '';
+    
+    if (results.length === 0) {
+        html = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">No results found</p>';
+    } else {
+        results.forEach((result, index) => {
+            const archivedLabel = result.archived ? ' (Archived)' : '';
+            html += `
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;" data-action="navigateSearch" data-id="${index}">
+                    <div style="font-weight: 600; color: var(--primary);">${result.type}${result.week ? ` - Week of ${new Date(result.week).toLocaleDateString()}` : ''}${archivedLabel}</div>
+                    <div style="font-weight: 600; margin-top: 0.25rem;">${result.title}</div>
+                    ${result.context ? `<div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem;">${result.context}</div>` : ''}
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('searchResults').innerHTML = html;
+    window.searchResultsData = results;
+    document.getElementById('searchModal').classList.add('active');
+}
+
+function navigateToResult(index) {
+    const result = window.searchResultsData[index];
+    
+    if (result.weekId) {
+        state.currentWeek = result.weekId;
+        renderWeeks();
+    }
+    
+    closeModal('searchModal');
+    
+    switch(result.type) {
+        case 'Agenda':
+            state.currentTab = 'agenda';
+            state.currentSubTab = result.category;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="agenda"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('agenda').classList.add('active');
+            renderAgenda();
+            setTimeout(() => highlightItem(result.itemId), 100);
+            break;
+        case 'Report':
+            state.currentTab = 'reporting';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="reporting"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('reporting').classList.add('active');
+            renderReporting();
+            setTimeout(() => {
+                const userSection = document.querySelector(`.user-section:has(.user-section-header:contains("${result.user}"))`);
+                if (userSection) {
+                    userSection.classList.add('highlight-item');
+                    userSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            break;
+        case 'Response':
+            state.currentTab = 'whoknew';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="whoknew"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('whoknew').classList.add('active');
+            renderWhoKnew();
+            setTimeout(() => highlightResponseItem(result.itemId), 100);
+            break;
+        case 'Resource':
+            state.currentTab = 'links';
+            state.currentLinkSubTab = result.category;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="links"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('links').classList.add('active');
+            renderLinks();
+            setTimeout(() => highlightResourceItem(result.itemId), 100);
+            break;
+        case 'Review':
+            state.currentTab = 'reviews';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="reviews"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('reviews').classList.add('active');
+            if (result.archived) {
+                renderReviews();
+                setTimeout(() => viewArchive(), 100);
+                setTimeout(() => highlightArchivedReview(result.itemId), 200);
+            } else {
+                renderReviews();
+                setTimeout(() => highlightReviewItem(result.itemId), 100);
+            }
+            break;
+    }
+}
+
+function highlightItem(itemId) {
+    const agendaItems = document.querySelectorAll('.agenda-item');
+    agendaItems.forEach(item => {
+        const checkbox = item.querySelector(`[data-item-id="${itemId}"]`);
+        if (checkbox) {
+            item.classList.add('highlight-item');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => item.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightResponseItem(itemId) {
+    const responseItems = document.querySelectorAll('.response-item');
+    responseItems.forEach(item => {
+        const deleteBtn = item.querySelector(`[data-id="${itemId}"]`);
+        if (deleteBtn) {
+            item.classList.add('highlight-item');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => item.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightResourceItem(itemId) {
+    const resourceItems = document.querySelectorAll('.resource-item');
+    resourceItems.forEach(item => {
+        const editBtn = item.querySelector(`[data-action="editResource"][data-id="${itemId}"]`);
+        if (editBtn) {
+            item.classList.add('highlight-item');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => item.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightReviewItem(itemId) {
+    const tickets = document.querySelectorAll('.ticket');
+    tickets.forEach(ticket => {
+        const commentInput = ticket.querySelector(`#review-comment-${itemId}`);
+        if (commentInput) {
+            ticket.classList.add('highlight-item');
+            ticket.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => ticket.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightArchivedReview(itemId) {
+    const tickets = document.querySelectorAll('.ticket');
+    tickets.forEach(ticket => {
+        const archiveBtn = ticket.querySelector(`[data-action="archiveReview"][data-id="${itemId}"]`);
+        if (archiveBtn) {
+            ticket.classList.add('highlight-item');
+            ticket.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => ticket.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+// Utility functions
+function showConfirmDialog(message, onConfirm) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').classList.add('active');
+    window.pendingDeleteAction = onConfirm;
+}
+
+function downloadData() {
+    const dataStr = JSON.stringify(state.data, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `aiva-hub-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function uploadData(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                state.data = JSON.parse(e.target.result);
+                saveData();
+                renderWeeks();
+                renderContent();
+                alert('Data uploaded successfully!');
+            } catch (error) {
+                alert('Error uploading file. Please make sure it is a valid backup file.');
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// Initialize the app
+init();
+
+});
+    </script>
+</body>
+</html>-group">
+                <label>Week Starting Date</label>
+                <input type="date" id="newWeekDate">
+            </div>
+            <button class="btn-primary" id="createWeekBtn">Create Week</button>
+        </div>
+    </div>
+
+    <!-- Search Results Modal -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Search Results</h3>
+                <button class="modal-close" data-modal="searchModal">×</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div id="genericModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="genericModalTitle"></h3>
+                <button class="modal-close" data-modal="genericModal">×</button>
+            </div>
+            <div id="genericModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Delete</h3>
+            </div>
+            <p id="confirmMessage" style="margin-bottom: 1.5rem;"></p>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="btn-small secondary" id="confirmCancel">Cancel</button>
+                <button class="btn-small" id="confirmDelete" style="background: var(--danger); color: white;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKvAjsJXTIbQFCZkl5UA6cqnm-JoZXJ7s",
+            authDomain: "aiva-team-hub.firebaseapp.com",
+            projectId: "aiva-team-hub",
+            storageBucket: "aiva-team-hub.firebasestorage.app",
+            messagingSenderId: "607135583520",
+            appId: "1:607135583520:web:7133bb8af836d85fabdb45",
+            measurementId: "G-WXXGBS6C1D"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseSignOut = signOut;
+        window.firebaseOnAuthStateChanged = onAuthStateChanged;
+        window.firestoreDoc = doc;
+        window.firestoreGetDoc = getDoc;
+        window.firestoreSetDoc = setDoc;
+        window.firestoreOnSnapshot = onSnapshot;
+        
+        // Signal that Firebase is ready
+        window.firebaseReady = true;
+    </script>
+
+    <script>
+// Wait for Firebase to be ready
+function waitForFirebase(callback) {
+    if (window.firebaseReady) {
+        callback();
+    } else {
+        setTimeout(function() {
+            waitForFirebase(callback);
+        }, 100);
+    }
+}
+
+waitForFirebase(function() {
+    
+// App state and data
+const state = {
+    currentUser: '',
+    currentUserId: null,
+    currentWeek: null,
+    currentTab: 'agenda',
+    currentSubTab: 'general',
+    currentLinkSubTab: 'general',
+    data: {
+        weeks: [],
+        links: {
+            general: [],
+            communicator: [],
+            w3: [],
+            davey: [],
+            aiva: []
+        },
+        reviews: []
+    },
+    userColors: {
+        'Josh': '#6366f1',
+        'Kari': '#ec4899',
+        'Anika': '#f59e0b',
+        'Bri': '#10b981'
+    },
+    questions: [
+        "How would you spend a million dollars in 24 hours?",
+        "How do you think your pets would describe you?",
+        "How would you survive a zombie apocalypse?",
+        "How do you take your coffee, and what does that say about you?",
+        "How would you explain your job to a five-year-old?",
+        "How do you think the world will be different in 50 years?",
+        "How would you design your dream treehouse?",
+        "How do you recharge after a tough week?",
+        "How would you throw the ultimate party?",
+        "How do you think your friends would describe you in three words?",
+        "How would you spend a perfect day with no obligations?",
+        "How do you think technology will change creativity?",
+        "How would you redesign the internet from scratch?",
+        "How do you deal with creative blocks?",
+        "How would you time travel: past or future, and why?",
+        "How do you think we could make meetings more fun?",
+        "How would you survive on a deserted island?",
+        "How do you celebrate small wins?",
+        "How would you describe your personal style?",
+        "How do you think AI will change our jobs in 10 years?",
+        "What's your favorite way to spend a weekend?",
+        "If you could have dinner with anyone, living or dead, who would it be?",
+        "What's a skill you'd love to master and why?",
+        "What's the best piece of advice you've ever received?",
+        "What's your hidden talent that might surprise people?",
+        "What's something you're really proud of?",
+        "What's your go-to comfort food?",
+        "What's the last thing that made you laugh really hard?",
+        "What's your favorite childhood memory?",
+        "What's something on your bucket list?"
+    ]
+};
+
+// Firebase authentication
+function setupAuthListeners() {
+    document.getElementById('loginBtn').addEventListener('click', handleLogin);
+    document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleLogin();
+    });
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+}
+
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) return;
+    
+    try {
+        const userCredential = await window.firebaseSignIn(window.firebaseAuth, email, password);
+        document.getElementById('loginError').classList.remove('active');
+        document.getElementById('loginModal').classList.remove('active');
+        
+        // Extract name from email (josh@aiva.org -> Josh)
+        const name = email.split('@')[0];
+        state.currentUser = name.charAt(0).toUpperCase() + name.slice(1);
+        state.currentUserId = userCredential.user.uid;
+        
+        initializeApp();
+    } catch (error) {
+        console.error('Login error:', error);
+        document.getElementById('loginError').classList.add('active');
+    }
+}
+
+async function handleLogout() {
+    try {
+        await window.firebaseSignOut(window.firebaseAuth);
+        location.reload();
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+}
+
+// Data management with Firebase
+function setupFirebaseListener() {
+    const docRef = window.firestoreDoc(window.firebaseDb, 'aivaHub', 'data');
+    
+    window.firestoreOnSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+            const loadedData = doc.data();
+            // Migrate old links format if needed
+            if (Array.isArray(loadedData.links)) {
+                loadedData.links = {
+                    general: loadedData.links,
+                    communicator: [],
+                    w3: [],
+                    davey: [],
+                    aiva: []
+                };
+            }
+            state.data = loadedData;
+            renderWeeks();
+            renderContent();
+        }
+    });
+}
+
+async function saveData() {
+    try {
+        const docRef = window.firestoreDoc(window.firebaseDb, 'aivaHub', 'data');
+        await window.firestoreSetDoc(docRef, state.data);
+    } catch (error) {
+        console.error('Error saving data:', error);
+    }
+}
+
+async function loadData() {
+    try {
+        const docRef = window.firestoreDoc(window.firebaseDb, 'aivaHub', 'data');
+        const docSnap = await window.firestoreGetDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const loadedData = docSnap.data();
+            // Migrate old links format if needed
+            if (Array.isArray(loadedData.links)) {
+                loadedData.links = {
+                    general: loadedData.links,
+                    communicator: [],
+                    w3: [],
+                    davey: [],
+                    aiva: []
+                };
+            }
+            state.data = loadedData;
+        }
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+}
+
+// Initialize
+function init() {
+    setupAuthListeners();
+    
+    // Check if user is logged in
+    window.firebaseOnAuthStateChanged(window.firebaseAuth, (user) => {
+        if (user) {
+            // User is signed in
+            const email = user.email;
+            const name = email.split('@')[0];
+            state.currentUser = name.charAt(0).toUpperCase() + name.slice(1);
+            state.currentUserId = user.uid;
+            
+            document.getElementById('loginModal').classList.remove('active');
+            initializeApp();
+        } else {
+            // User is signed out
+            document.getElementById('loginModal').classList.add('active');
+        }
+    });
+}
+
+async function initializeApp() {
+    renderUserBadge();
+    renderNav();
+    await loadData();
+    setupFirebaseListener();
+    renderWeeks();
+    
+    if (state.data.weeks.length > 0) {
+        state.currentWeek = state.data.weeks[0].id;
+    }
+    renderContent();
+    setupEventListeners();
+}
+
+// Setup all event listeners
+function setupEventListeners() {
+    // Week management
+    document.getElementById('newWeekBtn').addEventListener('click', openNewWeekModal);
+    document.getElementById('createWeekBtn').addEventListener('click', createNewWeek);
+    
+    // Search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') performSearch();
+    });
+    
+    // Data controls
+    document.getElementById('downloadBtn').addEventListener('click', downloadData);
+    document.getElementById('uploadBtnTrigger').addEventListener('click', function() {
+        document.getElementById('uploadInput').click();
+    });
+    document.getElementById('uploadInput').addEventListener('change', uploadData);
+    
+    // Modal close buttons
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modalId = this.getAttribute('data-modal');
+            closeModal(modalId);
+        });
+    });
+    
+    // Generate question button
+    document.getElementById('generateQuestionBtn').addEventListener('click', generateQuestion);
+    
+    // Confirm modal buttons
+    document.getElementById('confirmCancel').addEventListener('click', function() {
+        closeModal('confirmModal');
+    });
+    
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        if (window.pendingDeleteAction) {
+            window.pendingDeleteAction();
+            window.pendingDeleteAction = null;
+        }
+        closeModal('confirmModal');
+    });
+    
+    // Event delegation for dynamic content
+    document.addEventListener('click', handleClick);
+    document.addEventListener('change', handleChange);
+}
+
+// Handle all clicks via delegation
+function handleClick(e) {
+    // Look for the closest element with data-action
+    let target = e.target;
+    
+    // Keep going up until we find a data-action or hit the body
+    while (target && target !== document.body) {
+        if (target.hasAttribute && target.hasAttribute('data-action')) {
+            break;
+        }
+        target = target.parentElement;
+    }
+    
+    if (!target || !target.hasAttribute('data-action')) {
+        return;
+    }
+    
+    const action = target.getAttribute('data-action');
+    const id = target.getAttribute('data-id');
+    const value = target.getAttribute('data-value');
+    
+    switch(action) {
+        case 'selectWeek':
+            selectWeek(parseInt(id));
+            break;
+        case 'deleteWeek':
+            e.stopPropagation();
+            e.preventDefault();
+            deleteWeek(parseInt(id));
+            break;
+        case 'switchTab':
+            switchTab(value);
+            break;
+        case 'switchSubTab':
+            switchSubTab(value);
+            break;
+        case 'switchLinkSubTab':
+            switchLinkSubTab(value);
+            break;
+        case 'toggleForm':
+            document.getElementById(value).classList.toggle('active');
+            break;
+        case 'closeForm':
+            document.getElementById(value).classList.remove('active');
+            break;
+        case 'addAgenda':
+            addAgendaItem();
+            break;
+        case 'addReaction':
+            addReaction(parseInt(id), value);
+            break;
+        case 'addComment':
+            addComment(parseInt(id));
+            break;
+        case 'editAgenda':
+            editAgendaItem(parseInt(id));
+            break;
+        case 'deleteAgenda':
+            deleteAgendaItem(parseInt(id));
+            break;
+        case 'saveAgendaEdit':
+            saveAgendaEdit(parseInt(id));
+            break;
+        case 'addReport':
+            addReport();
+            break;
+        case 'editReport':
+            editReport(value);
+            break;
+        case 'deleteReport':
+            deleteReport(value);
+            break;
+        case 'saveReportEdit':
+            saveReportEdit(value);
+            break;
+        case 'addResponse':
+            addResponse();
+            break;
+        case 'addResponseReaction':
+            addResponseReaction(parseInt(id), value);
+            break;
+        case 'addResponseComment':
+            addResponseComment(parseInt(id));
+            break;
+        case 'deleteResponse':
+            deleteResponse(parseInt(id));
+            break;
+        case 'addResource':
+            addResource();
+            break;
+        case 'editResource':
+            editResource(parseInt(id));
+            break;
+        case 'deleteResource':
+            deleteResource(parseInt(id));
+            break;
+        case 'saveResourceEdit':
+            saveResourceEdit(parseInt(id));
+            break;
+        case 'submitReview':
+            submitReview();
+            break;
+        case 'addReviewComment':
+            addReviewComment(parseInt(id));
+            break;
+        case 'updateReviewStatus':
+            // Handled in handleChange
+            break;
+        case 'archiveReview':
+            archiveReview(parseInt(id));
+            break;
+        case 'deleteReview':
+            deleteReview(parseInt(id));
+            break;
+        case 'viewArchive':
+            viewArchive();
+            break;
+        case 'navigateSearch':
+            navigateToResult(parseInt(id));
+            break;
+    }
+}
+
+// Handle all changes via delegation
+function handleChange(e) {
+    const target = e.target;
+    
+    // Checkbox toggles
+    if (target.classList.contains('checkbox') && target.hasAttribute('data-item-id')) {
+        toggleCheck(parseInt(target.getAttribute('data-item-id')));
+    }
+    
+    // Review status changes
+    if (target.hasAttribute('data-review-id')) {
+        updateReviewStatus(parseInt(target.getAttribute('data-review-id')), target.value);
+    }
+}
+
+function renderUserBadge() {
+    const avatar = document.getElementById('userAvatar');
+    const username = document.getElementById('currentUsername');
+    avatar.textContent = state.currentUser.charAt(0);
+    avatar.style.background = state.userColors[state.currentUser];
+    username.textContent = state.currentUser;
+}
+
+// Navigation
+function renderNav() {
+    const nav = document.getElementById('mainNav');
+    nav.innerHTML = `
+        <button class="nav-tab active" data-action="switchTab" data-value="agenda">Weekly Agenda</button>
+        <button class="nav-tab" data-action="switchTab" data-value="reporting">Weekly Reporting</button>
+        <button class="nav-tab" data-action="switchTab" data-value="whoknew">Who Knew?</button>
+        <div class="nav-tabs-right">
+            <button class="nav-tab" data-action="switchTab" data-value="links">Important Links</button>
+            <button class="nav-tab" data-action="switchTab" data-value="reviews">Reviews/Approvals</button>
+        </div>
+    `;
+    
+    const subTabs = document.getElementById('agendaSubTabs');
+    subTabs.innerHTML = `
+        <button class="sub-tab active" data-subtab="general" data-action="switchSubTab" data-value="general">General</button>
+        <button class="sub-tab" data-subtab="communicator" data-action="switchSubTab" data-value="communicator">Communicator Awards</button>
+        <button class="sub-tab" data-subtab="w3" data-action="switchSubTab" data-value="w3">w3 Awards</button>
+        <button class="sub-tab" data-subtab="davey" data-action="switchSubTab" data-value="davey">Davey Awards</button>
+        <button class="sub-tab" data-subtab="aiva" data-action="switchSubTab" data-value="aiva">AIVA</button>
+    `;
+    
+    const linksSubTabs = document.getElementById('linksSubTabs');
+    linksSubTabs.innerHTML = `
+        <button class="sub-tab active" data-subtab="general" data-action="switchLinkSubTab" data-value="general">General</button>
+        <button class="sub-tab" data-subtab="communicator" data-action="switchLinkSubTab" data-value="communicator">Communicator Awards</button>
+        <button class="sub-tab" data-subtab="w3" data-action="switchLinkSubTab" data-value="w3">w3 Awards</button>
+        <button class="sub-tab" data-subtab="davey" data-action="switchLinkSubTab" data-value="davey">Davey Awards</button>
+        <button class="sub-tab" data-subtab="aiva" data-action="switchLinkSubTab" data-value="aiva">AIVA</button>
+    `;
+}
+
+function switchTab(tab) {
+    state.currentTab = tab;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-value="${tab}"]`).classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    renderContent();
+}
+
+function switchSubTab(subTab) {
+    state.currentSubTab = subTab;
+    document.querySelectorAll('#agendaSubTabs .sub-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`#agendaSubTabs [data-subtab="${subTab}"]`).classList.add('active');
+    renderAgenda();
+}
+
+function switchLinkSubTab(subTab) {
+    state.currentLinkSubTab = subTab;
+    document.querySelectorAll('#linksSubTabs .sub-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`#linksSubTabs [data-subtab="${subTab}"]`).classList.add('active');
+    renderLinks();
+}
+
+// Week management
+function openNewWeekModal() {
+    document.getElementById('newWeekModal').classList.add('active');
+    document.getElementById('newWeekDate').value = new Date().toISOString().split('T')[0];
+}
+
+function createNewWeek() {
+    const date = document.getElementById('newWeekDate').value;
+    if (!date) return;
+
+    const week = {
+        id: Date.now(),
+        date: date,
+        agenda: { general: [], communicator: [], w3: [], davey: [], aiva: [] },
+        reporting: {},
+        question: null
+    };
+
+    state.data.weeks.unshift(week);
+    saveData();
+    renderWeeks();
+    state.currentWeek = week.id;
+    renderContent();
+    closeModal('newWeekModal');
+}
+
+function renderWeeks() {
+    const weekList = document.getElementById('weekList');
+    weekList.innerHTML = state.data.weeks.map(week => `
+        <div class="week-item ${state.currentWeek === week.id ? 'active' : ''}" data-action="selectWeek" data-id="${week.id}">
+            <span>Week of ${new Date(week.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            <span class="week-item-delete" data-action="deleteWeek" data-id="${week.id}">🗑️</span>
+        </div>
+    `).join('');
+}
+
+function selectWeek(id) {
+    state.currentWeek = id;
+    renderWeeks();
+    renderContent();
+}
+
+function deleteWeek(id) {
+    showConfirmDialog('Are you sure you want to delete this week? All agenda items, reports, and responses will be lost.', function() {
+        state.data.weeks = state.data.weeks.filter(w => w.id !== id);
+        saveData();
+        renderWeeks();
+        if (state.currentWeek === id) {
+            state.currentWeek = state.data.weeks[0]?.id || null;
+            renderContent();
+        }
+    });
+}
+
+// Content rendering
+function renderContent() {
+    if (!state.currentWeek && state.currentTab !== 'links' && state.currentTab !== 'reviews') {
+        if (state.currentTab === 'agenda') {
+            document.getElementById('agendaContent').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Create a week to get started!</p>';
+        }
+        return;
+    }
+
+    switch(state.currentTab) {
+        case 'agenda':
+            renderAgenda();
+            break;
+        case 'reporting':
+            renderReporting();
+            break;
+        case 'whoknew':
+            renderWhoKnew();
+            break;
+        case 'links':
+            renderLinks();
+            break;
+        case 'reviews':
+            renderReviews();
+            break;
+    }
+}
+
+// Agenda functions
+function renderAgenda() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) {
+        document.getElementById('agendaContent').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Create a week to get started!</p>';
+        return;
+    }
+
+    const items = week.agenda[state.currentSubTab] || [];
+    const users = ['Josh', 'Kari', 'Anika', 'Bri'];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="agendaForm">
+            <span>+</span>
+            <span>Add Agenda Item</span>
+        </button>
+        <div class="inline-add-form" id="agendaForm">
+            <input type="text" id="agendaTitle" placeholder="What's the topic?">
+            <input type="text" id="agendaDescription" placeholder="Any details? (optional)">
+            <input type="text" id="agendaLinks" placeholder="Add links (comma-separated, optional)">
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="agendaForm">Cancel</button>
+                <button class="btn-small primary" data-action="addAgenda">Add Item</button>
+            </div>
+        </div>
+    `;
+
+    users.forEach(user => {
+        const userItems = items.filter(item => item.user === user);
+        if (userItems.length === 0) return;
+        
+        html += `
+            <div class="user-section">
+                <div class="user-section-header">
+                    <div class="user-avatar" style="background: ${state.userColors[user]}; width: 28px; height: 28px; font-size: 0.75rem;">${user.charAt(0)}</div>
+                    ${user}
+                </div>
+        `;
+        
+        userItems.forEach(item => {
+            html += renderAgendaItem(item);
+        });
+        
+        html += `</div>`;
+    });
+
+    document.getElementById('agendaContent').innerHTML = html;
+}
+
+function renderAgendaItem(item) {
+    const reactions = item.reactions || {};
+    const comments = item.comments || [];
+    
+    return `
+        <div class="agenda-item">
+            <div class="agenda-item-header">
+                <input type="checkbox" class="checkbox" ${item.checked ? 'checked' : ''} data-item-id="${item.id}">
+                <div class="agenda-item-content">
+                    <div class="agenda-item-title">${item.title}</div>
+                    ${item.description ? `<div class="agenda-item-description">${item.description}</div>` : ''}
+                    ${item.links && item.links.length > 0 ? `
+                        <div class="agenda-item-links">
+                            ${item.links.map(link => `<a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 Link</a>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            <div class="agenda-item-actions">
+                <button class="action-btn" data-action="addReaction" data-id="${item.id}" data-value="👍">👍</button>
+                <button class="action-btn" data-action="addReaction" data-id="${item.id}" data-value="❤️">❤️</button>
+                <button class="action-btn" data-action="addReaction" data-id="${item.id}" data-value="🎉">🎉</button>
+                <button class="action-btn" data-action="editAgenda" data-id="${item.id}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button class="action-btn" data-action="deleteAgenda" data-id="${item.id}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+            </div>
+            ${Object.keys(reactions).length > 0 ? `
+                <div class="emoji-reactions">
+                    ${Object.entries(reactions).map(([emoji, users]) => `
+                        <span class="reaction" data-users="${users.join(', ')}">${emoji} ${users.length}</span>
+                    `).join('')}
+                </div>
+            ` : ''}
+            <div class="comments">
+                ${comments.map(comment => `
+                    <div class="comment">
+                        <span class="comment-author">${comment.user}:</span> ${comment.text}
+                    </div>
+                `).join('')}
+                <div class="comment-input">
+                    <input type="text" placeholder="Add a comment..." id="comment-${item.id}">
+                    <button class="btn-primary" data-action="addComment" data-id="${item.id}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function addAgendaItem() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    const title = document.getElementById('agendaTitle').value.trim();
+    const description = document.getElementById('agendaDescription').value.trim();
+    const linksInput = document.getElementById('agendaLinks').value.trim();
+    
+    if (!title) return;
+
+    const links = linksInput ? linksInput.split(',').map(l => l.trim()).filter(l => l) : [];
+
+    const item = {
+        id: Date.now(),
+        user: state.currentUser,
+        title,
+        description,
+        links,
+        checked: false,
+        reactions: {},
+        comments: []
+    };
+
+    if (!week.agenda[state.currentSubTab]) {
+        week.agenda[state.currentSubTab] = [];
+    }
+    week.agenda[state.currentSubTab].push(item);
+    saveData();
+    renderAgenda();
+}
+
+function toggleCheck(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week || !week.agenda[state.currentSubTab]) return;
+    
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    if (item) {
+        item.checked = !item.checked;
+        saveData();
+    }
+}
+
+function addReaction(id, emoji) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    if (!item.reactions[emoji]) {
+        item.reactions[emoji] = [];
+    }
+    if (!item.reactions[emoji].includes(state.currentUser)) {
+        item.reactions[emoji].push(state.currentUser);
+    }
+    saveData();
+    renderAgenda();
+}
+
+function addComment(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    const input = document.getElementById(`comment-${id}`);
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    item.comments.push({
+        user: state.currentUser,
+        text,
+        timestamp: Date.now()
+    });
+    saveData();
+    renderAgenda();
+}
+
+function editAgendaItem(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    
+    document.getElementById('genericModalTitle').textContent = 'Edit Agenda Item';
+    document.getElementById('genericModalContent').innerHTML = `
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="editTitle" value="${item.title}">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="editDescription">${item.description || ''}</textarea>
+        </div>
+        <div class="form<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVA Team Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .username-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .username-modal.active {
+            display: flex;
+        }
+
+        .username-modal-content {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .username-modal h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.75rem;
+        }
+
+        .username-modal p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .username-modal select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .username-modal button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        header {
+            background: var(--surface);
+            padding: 1.25rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            width: 250px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .new-week-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .week-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .week-item {
+            padding: 0.875rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+        }
+
+        .week-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .week-item-delete {
+            opacity: 0;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .week-item:hover .week-item-delete {
+            opacity: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            padding: 0 2rem;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-tabs-right {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .sub-tab {
+            padding: 0.625rem 1.25rem;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .sub-tab.active {
+            color: white;
+            border-color: transparent;
+        }
+
+        .sub-tab[data-subtab="general"].active {
+            background: var(--primary);
+        }
+
+        .sub-tab[data-subtab="communicator"].active {
+            background: #6E91D6;
+        }
+
+        .sub-tab[data-subtab="w3"].active {
+            background: #FF6D63;
+        }
+
+        .sub-tab[data-subtab="davey"].active {
+            background: #008C72;
+        }
+
+        .sub-tab[data-subtab="aiva"].active {
+            background: #000000;
+        }
+
+        .quick-add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .inline-add-form {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .inline-add-form.active {
+            display: block;
+        }
+
+        .inline-add-form input,
+        .inline-add-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            font-family: inherit;
+        }
+
+        .inline-add-form textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .inline-form-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-small.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-small.secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .user-section {
+            margin-bottom: 2rem;
+        }
+
+        .user-section-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .agenda-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+
+        .agenda-item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 0.125rem;
+        }
+
+        .agenda-item-content {
+            flex: 1;
+        }
+
+        .agenda-item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .agenda-item-description {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .agenda-item-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .link-badge {
+            background: var(--bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .agenda-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg);
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+        
+        .action-btn svg * {
+            pointer-events: none;
+        }
+
+        .emoji-reactions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .reaction {
+            background: var(--bg);
+            padding: 0.25rem 0.625rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .reaction:hover::after {
+            content: attr(data-users);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            z-index: 1000;
+        }
+
+        .comments {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .comment {
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .ticket {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .ticket-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .question-generator {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 2rem;
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .generate-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .response-thread {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .response-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .response-author {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .response-text {
+            margin-bottom: 0.75rem;
+        }
+
+        .resource-item {
+            background: var(--surface);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            cursor: move;
+        }
+        
+        .resource-item.dragging {
+            opacity: 0.5;
+        }
+        
+        .resource-item.drag-over {
+            border-top: 3px solid var(--primary);
+        }
+
+        .resource-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .data-controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 500;
+        }
+
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+        
+        .icon-btn svg * {
+            pointer-events: none;
+        }
+
+        .btn-archive-toggle {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes highlight {
+            0%, 100% { background: transparent; }
+            50% { background: #fef3c7; }
+        }
+
+        .highlight-item {
+            animation: highlight 1.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Username Selection Modal -->
+    <div id="usernameModal" class="username-modal">
+        <div class="username-modal-content">
+            <h2>Welcome to AIVA Hub! 👋</h2>
+            <p>Please select your name to get started</p>
+            <select id="usernameSelect">
+                <option value="">Choose your name...</option>
+                <option value="Josh">Josh (Reviewer/Approver)</option>
+                <option value="Kari">Kari (Juror Manager)</option>
+                <option value="Anika">Anika (Social Media Manager)</option>
+                <option value="Bri">Bri (Copywriter)</option>
+            </select>
+            <button id="setUsernameBtn">Let's Go!</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">A</div>
+            <span>AIVA Hub</span>
+        </div>
+        <div class="header-right">
+            <div class="user-badge">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span id="currentUsername"></span>
+            </div>
+            <div>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search anything...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <button class="new-week-btn" id="newWeekBtn">
+                <span>➕</span>
+                <span>New Week</span>
+            </button>
+            <div class="week-list" id="weekList"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs" id="mainNav"></nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Agenda Section -->
+                <div id="agenda" class="section active">
+                    <div class="sub-tabs" id="agendaSubTabs"></div>
+                    <div id="agendaContent"></div>
+                </div>
+
+                <!-- Weekly Reporting Section -->
+                <div id="reporting" class="section">
+                    <div id="reportingContent"></div>
+                </div>
+
+                <!-- Who Knew Section -->
+                <div id="whoknew" class="section">
+                    <div class="question-generator">
+                        <div class="question-text" id="currentQuestion">Click below to generate a random question!</div>
+                        <button class="generate-btn" id="generateQuestionBtn">🎲 Generate Question</button>
+                    </div>
+                    <div id="responsesContent"></div>
+                </div>
+
+                <!-- Important Links Section -->
+                <div id="links" class="section">
+                    <div class="sub-tabs" id="linksSubTabs"></div>
+                    <div id="linksContent"></div>
+                </div>
+
+                <!-- Reviews/Approvals Section -->
+                <div id="reviews" class="section">
+                    <div id="reviewsContent"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Data Controls -->
+    <div class="data-controls">
+        <button class="icon-btn" id="downloadBtn" title="Download Backup">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        </button>
+        <button class="icon-btn" id="uploadBtnTrigger" title="Upload Backup">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        </button>
+        <input type="file" id="uploadInput" style="display: none;" accept=".json">
+    </div>
+
+    <!-- New Week Modal -->
+    <div id="newWeekModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Week</h3>
+                <button class="modal-close" data-modal="newWeekModal">×</button>
+            </div>
+            <div class="form-group">
+                <label>Week Starting Date</label>
+                <input type="date" id="newWeekDate">
+            </div>
+            <button class="btn-primary" id="createWeekBtn">Create Week</button>
+        </div>
+    </div>
+
+    <!-- Search Results Modal -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Search Results</h3>
+                <button class="modal-close" data-modal="searchModal">×</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div id="genericModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="genericModalTitle"></h3>
+                <button class="modal-close" data-modal="genericModal">×</button>
+            </div>
+            <div id="genericModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Delete</h3>
+            </div>
+            <p id="confirmMessage" style="margin-bottom: 1.5rem;"></p>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="btn-small secondary" id="confirmCancel">Cancel</button>
+                <button class="btn-small" id="confirmDelete" style="background: var(--danger); color: white;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Define everything inside DOMContentLoaded to ensure it runs after HTML is ready
+document.addEventListener('DOMContentLoaded', function() {
+    
+// App state and data
+const state = {
+    currentUser: '',
+    currentWeek: null,
+    currentTab: 'agenda',
+    currentSubTab: 'general',
+    currentLinkSubTab: 'general',
+    data: {
+        weeks: [],
+        links: {
+            general: [],
+            communicator: [],
+            w3: [],
+            davey: [],
+            aiva: []
+        },
+        reviews: []
+    },
+    userColors: {
+        'Josh': '#6366f1',
+        'Kari': '#ec4899',
+        'Anika': '#f59e0b',
+        'Bri': '#10b981'
+    },
+    questions: [
+        "How would you spend a million dollars in 24 hours?",
+        "How do you think your pets would describe you?",
+        "How would you survive a zombie apocalypse?",
+        "How do you take your coffee, and what does that say about you?",
+        "How would you explain your job to a five-year-old?",
+        "How do you think the world will be different in 50 years?",
+        "How would you design your dream treehouse?",
+        "How do you recharge after a tough week?",
+        "How would you throw the ultimate party?",
+        "How do you think your friends would describe you in three words?",
+        "How would you spend a perfect day with no obligations?",
+        "How do you think technology will change creativity?",
+        "How would you redesign the internet from scratch?",
+        "How do you deal with creative blocks?",
+        "How would you time travel: past or future, and why?",
+        "How do you think we could make meetings more fun?",
+        "How would you survive on a deserted island?",
+        "How do you celebrate small wins?",
+        "How would you describe your personal style?",
+        "How do you think AI will change our jobs in 10 years?",
+        "What's your favorite way to spend a weekend?",
+        "If you could have dinner with anyone, living or dead, who would it be?",
+        "What's a skill you'd love to master and why?",
+        "What's the best piece of advice you've ever received?",
+        "What's your hidden talent that might surprise people?",
+        "What's something you're really proud of?",
+        "What's your go-to comfort food?",
+        "What's the last thing that made you laugh really hard?",
+        "What's your favorite childhood memory?",
+        "What's something on your bucket list?"
+    ]
+};
+
+// Data management
+function loadData() {
+    const saved = localStorage.getItem('aivaHubData');
+    if (saved) {
+        const loadedData = JSON.parse(saved);
+        // Migrate old links format to new format if needed
+        if (Array.isArray(loadedData.links)) {
+            loadedData.links = {
+                general: loadedData.links,
+                communicator: [],
+                w3: [],
+                davey: [],
+                aiva: []
+            };
+        }
+        state.data = loadedData;
+    }
+}
+
+function saveData() {
+    localStorage.setItem('aivaHubData', JSON.stringify(state.data));
+}
+
+// Initialize
+function init() {
+    loadData();
+    const savedUser = localStorage.getItem('aivaCurrentUser');
+    
+    if (savedUser) {
+        state.currentUser = savedUser;
+        document.getElementById('usernameModal').classList.remove('active');
+        renderUserBadge();
+        renderNav();
+        renderWeeks();
+        
+        if (state.data.weeks.length > 0) {
+            state.currentWeek = state.data.weeks[0].id;
+        }
+        renderContent();
+    } else {
+        // Show the username modal
+        setTimeout(() => {
+            document.getElementById('usernameModal').classList.add('active');
+        }, 100);
+    }
+    
+    setupEventListeners();
+}
+
+// Setup all event listeners
+function setupEventListeners() {
+    // Username modal
+    document.getElementById('setUsernameBtn').addEventListener('click', setUsername);
+    
+    // Week management
+    document.getElementById('newWeekBtn').addEventListener('click', openNewWeekModal);
+    document.getElementById('createWeekBtn').addEventListener('click', createNewWeek);
+    
+    // Search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') performSearch();
+    });
+    
+    // Data controls
+    document.getElementById('downloadBtn').addEventListener('click', downloadData);
+    document.getElementById('uploadBtnTrigger').addEventListener('click', function() {
+        document.getElementById('uploadInput').click();
+    });
+    document.getElementById('uploadInput').addEventListener('change', uploadData);
+    
+    // Modal close buttons
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modalId = this.getAttribute('data-modal');
+            closeModal(modalId);
+        });
+    });
+    
+    // Generate question button
+    document.getElementById('generateQuestionBtn').addEventListener('click', generateQuestion);
+    
+    // Confirm modal buttons
+    document.getElementById('confirmCancel').addEventListener('click', function() {
+        closeModal('confirmModal');
+    });
+    
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        if (window.pendingDeleteAction) {
+            window.pendingDeleteAction();
+            window.pendingDeleteAction = null;
+        }
+        closeModal('confirmModal');
+    });
+    
+    // Event delegation for dynamic content
+    document.addEventListener('click', handleClick);
+    document.addEventListener('change', handleChange);
+}
+
+// Handle all clicks via delegation
+function handleClick(e) {
+    // Look for the closest element with data-action
+    let target = e.target;
+    
+    // Keep going up until we find a data-action or hit the body
+    while (target && target !== document.body) {
+        if (target.hasAttribute && target.hasAttribute('data-action')) {
+            break;
+        }
+        target = target.parentElement;
+    }
+    
+    if (!target || !target.hasAttribute('data-action')) {
+        return;
+    }
+    
+    const action = target.getAttribute('data-action');
+    const id = target.getAttribute('data-id');
+    const value = target.getAttribute('data-value');
+    
+    switch(action) {
+        case 'selectWeek':
+            selectWeek(parseInt(id));
+            break;
+        case 'deleteWeek':
+            e.stopPropagation();
+            e.preventDefault();
+            deleteWeek(parseInt(id));
+            break;
+        case 'switchTab':
+            switchTab(value);
+            break;
+        case 'switchSubTab':
+            switchSubTab(value);
+            break;
+        case 'switchLinkSubTab':
+            switchLinkSubTab(value);
+            break;
+        case 'toggleForm':
+            document.getElementById(value).classList.toggle('active');
+            break;
+        case 'closeForm':
+            document.getElementById(value).classList.remove('active');
+            break;
+        case 'addAgenda':
+            addAgendaItem();
+            break;
+        case 'addReaction':
+            addReaction(parseInt(id), value);
+            break;
+        case 'addComment':
+            addComment(parseInt(id));
+            break;
+        case 'editAgenda':
+            editAgendaItem(parseInt(id));
+            break;
+        case 'deleteAgenda':
+            deleteAgendaItem(parseInt(id));
+            break;
+        case 'saveAgendaEdit':
+            saveAgendaEdit(parseInt(id));
+            break;
+        case 'addReport':
+            addReport();
+            break;
+        case 'editReport':
+            editReport(value);
+            break;
+        case 'deleteReport':
+            deleteReport(value);
+            break;
+        case 'saveReportEdit':
+            saveReportEdit(value);
+            break;
+        case 'addResponse':
+            addResponse();
+            break;
+        case 'addResponseReaction':
+            addResponseReaction(parseInt(id), value);
+            break;
+        case 'addResponseComment':
+            addResponseComment(parseInt(id));
+            break;
+        case 'deleteResponse':
+            deleteResponse(parseInt(id));
+            break;
+        case 'addResource':
+            addResource();
+            break;
+        case 'editResource':
+            editResource(parseInt(id));
+            break;
+        case 'deleteResource':
+            deleteResource(parseInt(id));
+            break;
+        case 'saveResourceEdit':
+            saveResourceEdit(parseInt(id));
+            break;
+        case 'submitReview':
+            submitReview();
+            break;
+        case 'addReviewComment':
+            addReviewComment(parseInt(id));
+            break;
+        case 'updateReviewStatus':
+            // Handled in handleChange
+            break;
+        case 'archiveReview':
+            archiveReview(parseInt(id));
+            break;
+        case 'deleteReview':
+            deleteReview(parseInt(id));
+            break;
+        case 'viewArchive':
+            viewArchive();
+            break;
+        case 'navigateSearch':
+            navigateToResult(parseInt(id));
+            break;
+    }
+}
+
+// Handle all changes via delegation
+function handleChange(e) {
+    const target = e.target;
+    
+    // Checkbox toggles
+    if (target.classList.contains('checkbox') && target.hasAttribute('data-item-id')) {
+        toggleCheck(parseInt(target.getAttribute('data-item-id')));
+    }
+    
+    // Review status changes
+    if (target.hasAttribute('data-review-id')) {
+        updateReviewStatus(parseInt(target.getAttribute('data-review-id')), target.value);
+    }
+}
+
+// Username functions
+function setUsername() {
+    const select = document.getElementById('usernameSelect');
+    if (select.value) {
+        state.currentUser = select.value;
+        localStorage.setItem('aivaCurrentUser', state.currentUser);
+        document.getElementById('usernameModal').classList.remove('active');
+        renderUserBadge();
+        renderNav();
+        renderWeeks();
+        if (state.data.weeks.length > 0) {
+            state.currentWeek = state.data.weeks[0].id;
+        }
+        renderContent();
+    } else {
+        alert('Please select a name to continue');
+    }
+}
+
+function renderUserBadge() {
+    const avatar = document.getElementById('userAvatar');
+    const username = document.getElementById('currentUsername');
+    avatar.textContent = state.currentUser.charAt(0);
+    avatar.style.background = state.userColors[state.currentUser];
+    username.textContent = state.currentUser;
+}
+
+// Navigation
+function renderNav() {
+    const nav = document.getElementById('mainNav');
+    nav.innerHTML = `
+        <button class="nav-tab active" data-action="switchTab" data-value="agenda">Weekly Agenda</button>
+        <button class="nav-tab" data-action="switchTab" data-value="reporting">Weekly Reporting</button>
+        <button class="nav-tab" data-action="switchTab" data-value="whoknew">Who Knew?</button>
+        <div class="nav-tabs-right">
+            <button class="nav-tab" data-action="switchTab" data-value="links">Important Links</button>
+            <button class="nav-tab" data-action="switchTab" data-value="reviews">Reviews/Approvals</button>
+        </div>
+    `;
+    
+    const subTabs = document.getElementById('agendaSubTabs');
+    subTabs.innerHTML = `
+        <button class="sub-tab active" data-subtab="general" data-action="switchSubTab" data-value="general">General</button>
+        <button class="sub-tab" data-subtab="communicator" data-action="switchSubTab" data-value="communicator">Communicator Awards</button>
+        <button class="sub-tab" data-subtab="w3" data-action="switchSubTab" data-value="w3">w3 Awards</button>
+        <button class="sub-tab" data-subtab="davey" data-action="switchSubTab" data-value="davey">Davey Awards</button>
+        <button class="sub-tab" data-subtab="aiva" data-action="switchSubTab" data-value="aiva">AIVA</button>
+    `;
+    
+    const linksSubTabs = document.getElementById('linksSubTabs');
+    linksSubTabs.innerHTML = `
+        <button class="sub-tab active" data-subtab="general" data-action="switchLinkSubTab" data-value="general">General</button>
+        <button class="sub-tab" data-subtab="communicator" data-action="switchLinkSubTab" data-value="communicator">Communicator Awards</button>
+        <button class="sub-tab" data-subtab="w3" data-action="switchLinkSubTab" data-value="w3">w3 Awards</button>
+        <button class="sub-tab" data-subtab="davey" data-action="switchLinkSubTab" data-value="davey">Davey Awards</button>
+        <button class="sub-tab" data-subtab="aiva" data-action="switchLinkSubTab" data-value="aiva">AIVA</button>
+    `;
+}
+
+function switchTab(tab) {
+    state.currentTab = tab;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-value="${tab}"]`).classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    renderContent();
+}
+
+function switchSubTab(subTab) {
+    state.currentSubTab = subTab;
+    document.querySelectorAll('#agendaSubTabs .sub-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`#agendaSubTabs [data-subtab="${subTab}"]`).classList.add('active');
+    renderAgenda();
+}
+
+function switchLinkSubTab(subTab) {
+    state.currentLinkSubTab = subTab;
+    document.querySelectorAll('#linksSubTabs .sub-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`#linksSubTabs [data-subtab="${subTab}"]`).classList.add('active');
+    renderLinks();
+}
+
+// Week management
+function openNewWeekModal() {
+    document.getElementById('newWeekModal').classList.add('active');
+    document.getElementById('newWeekDate').value = new Date().toISOString().split('T')[0];
+}
+
+function createNewWeek() {
+    const date = document.getElementById('newWeekDate').value;
+    if (!date) return;
+
+    const week = {
+        id: Date.now(),
+        date: date,
+        agenda: { general: [], communicator: [], w3: [], davey: [], aiva: [] },
+        reporting: {},
+        question: null
+    };
+
+    state.data.weeks.unshift(week);
+    saveData();
+    renderWeeks();
+    state.currentWeek = week.id;
+    renderContent();
+    closeModal('newWeekModal');
+}
+
+function renderWeeks() {
+    const weekList = document.getElementById('weekList');
+    weekList.innerHTML = state.data.weeks.map(week => `
+        <div class="week-item ${state.currentWeek === week.id ? 'active' : ''}" data-action="selectWeek" data-id="${week.id}">
+            <span>Week of ${new Date(week.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            <span class="week-item-delete" data-action="deleteWeek" data-id="${week.id}">🗑️</span>
+        </div>
+    `).join('');
+}
+
+function selectWeek(id) {
+    state.currentWeek = id;
+    renderWeeks();
+    renderContent();
+}
+
+function deleteWeek(id) {
+    showConfirmDialog('Are you sure you want to delete this week? All agenda items, reports, and responses will be lost.', function() {
+        state.data.weeks = state.data.weeks.filter(w => w.id !== id);
+        saveData();
+        renderWeeks();
+        if (state.currentWeek === id) {
+            state.currentWeek = state.data.weeks[0]?.id || null;
+            renderContent();
+        }
+    });
+}
+
+// Content rendering
+function renderContent() {
+    if (!state.currentWeek && state.currentTab !== 'links' && state.currentTab !== 'reviews') {
+        if (state.currentTab === 'agenda') {
+            document.getElementById('agendaContent').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Create a week to get started!</p>';
+        }
+        return;
+    }
+
+    switch(state.currentTab) {
+        case 'agenda':
+            renderAgenda();
+            break;
+        case 'reporting':
+            renderReporting();
+            break;
+        case 'whoknew':
+            renderWhoKnew();
+            break;
+        case 'links':
+            renderLinks();
+            break;
+        case 'reviews':
+            renderReviews();
+            break;
+    }
+}
+
+// Agenda functions
+function renderAgenda() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) {
+        document.getElementById('agendaContent').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Create a week to get started!</p>';
+        return;
+    }
+
+    const items = week.agenda[state.currentSubTab] || [];
+    const users = ['Josh', 'Kari', 'Anika', 'Bri'];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="agendaForm">
+            <span>+</span>
+            <span>Add Agenda Item</span>
+        </button>
+        <div class="inline-add-form" id="agendaForm">
+            <input type="text" id="agendaTitle" placeholder="What's the topic?">
+            <input type="text" id="agendaDescription" placeholder="Any details? (optional)">
+            <input type="text" id="agendaLinks" placeholder="Add links (comma-separated, optional)">
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="agendaForm">Cancel</button>
+                <button class="btn-small primary" data-action="addAgenda">Add Item</button>
+            </div>
+        </div>
+    `;
+
+    users.forEach(user => {
+        const userItems = items.filter(item => item.user === user);
+        if (userItems.length === 0) return;
+        
+        html += `
+            <div class="user-section">
+                <div class="user-section-header">
+                    <div class="user-avatar" style="background: ${state.userColors[user]}; width: 28px; height: 28px; font-size: 0.75rem;">${user.charAt(0)}</div>
+                    ${user}
+                </div>
+        `;
+        
+        userItems.forEach(item => {
+            html += renderAgendaItem(item);
+        });
+        
+        html += `</div>`;
+    });
+
+    document.getElementById('agendaContent').innerHTML = html;
+}
+
+function renderAgendaItem(item) {
+    const reactions = item.reactions || {};
+    const comments = item.comments || [];
+    
+    return `
+        <div class="agenda-item">
+            <div class="agenda-item-header">
+                <input type="checkbox" class="checkbox" ${item.checked ? 'checked' : ''} data-item-id="${item.id}">
+                <div class="agenda-item-content">
+                    <div class="agenda-item-title">${item.title}</div>
+                    ${item.description ? `<div class="agenda-item-description">${item.description}</div>` : ''}
+                    ${item.links && item.links.length > 0 ? `
+                        <div class="agenda-item-links">
+                            ${item.links.map(link => `<a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 Link</a>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            <div class="agenda-item-actions">
+                <button class="action-btn" data-action="addReaction" data-id="${item.id}" data-value="👍">👍</button>
+                <button class="action-btn" data-action="addReaction" data-id="${item.id}" data-value="❤️">❤️</button>
+                <button class="action-btn" data-action="addReaction" data-id="${item.id}" data-value="🎉">🎉</button>
+                <button class="action-btn" data-action="editAgenda" data-id="${item.id}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button class="action-btn" data-action="deleteAgenda" data-id="${item.id}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+            </div>
+            ${Object.keys(reactions).length > 0 ? `
+                <div class="emoji-reactions">
+                    ${Object.entries(reactions).map(([emoji, users]) => `
+                        <span class="reaction" data-users="${users.join(', ')}">${emoji} ${users.length}</span>
+                    `).join('')}
+                </div>
+            ` : ''}
+            <div class="comments">
+                ${comments.map(comment => `
+                    <div class="comment">
+                        <span class="comment-author">${comment.user}:</span> ${comment.text}
+                    </div>
+                `).join('')}
+                <div class="comment-input">
+                    <input type="text" placeholder="Add a comment..." id="comment-${item.id}">
+                    <button class="btn-primary" data-action="addComment" data-id="${item.id}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function addAgendaItem() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    const title = document.getElementById('agendaTitle').value.trim();
+    const description = document.getElementById('agendaDescription').value.trim();
+    const linksInput = document.getElementById('agendaLinks').value.trim();
+    
+    if (!title) return;
+
+    const links = linksInput ? linksInput.split(',').map(l => l.trim()).filter(l => l) : [];
+
+    const item = {
+        id: Date.now(),
+        user: state.currentUser,
+        title,
+        description,
+        links,
+        checked: false,
+        reactions: {},
+        comments: []
+    };
+
+    if (!week.agenda[state.currentSubTab]) {
+        week.agenda[state.currentSubTab] = [];
+    }
+    week.agenda[state.currentSubTab].push(item);
+    saveData();
+    renderAgenda();
+}
+
+function toggleCheck(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week || !week.agenda[state.currentSubTab]) return;
+    
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    if (item) {
+        item.checked = !item.checked;
+        saveData();
+    }
+}
+
+function addReaction(id, emoji) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    if (!item.reactions[emoji]) {
+        item.reactions[emoji] = [];
+    }
+    if (!item.reactions[emoji].includes(state.currentUser)) {
+        item.reactions[emoji].push(state.currentUser);
+    }
+    saveData();
+    renderAgenda();
+}
+
+function addComment(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    const input = document.getElementById(`comment-${id}`);
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    item.comments.push({
+        user: state.currentUser,
+        text,
+        timestamp: Date.now()
+    });
+    saveData();
+    renderAgenda();
+}
+
+function editAgendaItem(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    
+    document.getElementById('genericModalTitle').textContent = 'Edit Agenda Item';
+    document.getElementById('genericModalContent').innerHTML = `
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="editTitle" value="${item.title}">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="editDescription">${item.description || ''}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Links (comma-separated)</label>
+            <input type="text" id="editLinks" value="${item.links.join(', ')}">
+        </div>
+        <button class="btn-primary" data-action="saveAgendaEdit" data-id="${id}">Save Changes</button>
+    `;
+    document.getElementById('genericModal').classList.add('active');
+}
+
+function saveAgendaEdit(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const item = week.agenda[state.currentSubTab].find(i => i.id === id);
+    
+    item.title = document.getElementById('editTitle').value;
+    item.description = document.getElementById('editDescription').value;
+    item.links = document.getElementById('editLinks').value.split(',').map(l => l.trim()).filter(l => l);
+    
+    saveData();
+    renderAgenda();
+    closeModal('genericModal');
+}
+
+function deleteAgendaItem(id) {
+    showConfirmDialog('Delete this agenda item?', function() {
+        const week = state.data.weeks.find(w => w.id === state.currentWeek);
+        if (week && week.agenda[state.currentSubTab]) {
+            week.agenda[state.currentSubTab] = week.agenda[state.currentSubTab].filter(i => i.id !== id);
+            saveData();
+            renderAgenda();
+        }
+    });
+}
+
+// Reporting functions
+function renderReporting() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    const users = ['Josh', 'Kari', 'Anika', 'Bri'];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="reportForm">
+            <span>+</span>
+            <span>Add Your Weekly Report</span>
+        </button>
+        <div class="inline-add-form" id="reportForm">
+            <textarea id="reportingText" style="min-height: 120px;" placeholder="Share your weekly findings, metrics, and highlights..."></textarea>
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="reportForm">Cancel</button>
+                <button class="btn-small primary" data-action="addReport">Post Report</button>
+            </div>
+        </div>
+    `;
+
+    users.forEach(user => {
+        const report = week.reporting[user];
+        if (!report) return;
+        
+        html += `
+            <div class="user-section">
+                <div class="user-section-header">
+                    <div class="user-avatar" style="background: ${state.userColors[user]}; width: 28px; height: 28px; font-size: 0.75rem;">${user.charAt(0)}</div>
+                    ${user}
+                </div>
+                <div class="agenda-item">
+                    <div style="white-space: pre-wrap;">${report.text}</div>
+                    ${user === state.currentUser ? `
+                        <div class="agenda-item-actions" style="margin-top: 1rem;">
+                            <button class="action-btn" data-action="editReport" data-value="${user}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+                            <button class="action-btn" data-action="deleteReport" data-value="${user}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById('reportingContent').innerHTML = html;
+}
+
+function addReport() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const text = document.getElementById('reportingText').value.trim();
+    
+    if (!text) return;
+
+    week.reporting[state.currentUser] = {
+        text,
+        timestamp: Date.now()
+    };
+    
+    saveData();
+    renderReporting();
+}
+
+function editReport(user) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const report = week.reporting[user];
+    
+    document.getElementById('genericModalTitle').textContent = 'Edit Report';
+    document.getElementById('genericModalContent').innerHTML = `
+        <div class="form-group">
+            <label>Report Content</label>
+            <textarea id="editReportText" style="min-height: 150px;">${report.text}</textarea>
+        </div>
+        <button class="btn-primary" data-action="saveReportEdit" data-value="${user}">Save Changes</button>
+    `;
+    document.getElementById('genericModal').classList.add('active');
+}
+
+function saveReportEdit(user) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    week.reporting[user].text = document.getElementById('editReportText').value;
+    saveData();
+    renderReporting();
+    closeModal('genericModal');
+}
+
+function deleteReport(user) {
+    showConfirmDialog('Delete your report?', function() {
+        const week = state.data.weeks.find(w => w.id === state.currentWeek);
+        delete week.reporting[user];
+        saveData();
+        renderReporting();
+    });
+}
+
+// Who Knew functions
+function renderWhoKnew() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    if (!week.question) {
+        week.question = {
+            text: state.questions[Math.floor(Math.random() * state.questions.length)],
+            responses: []
+        };
+        saveData();
+    }
+
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="responseForm">
+            <span>+</span>
+            <span>Share Your Response</span>
+        </button>
+        <div class="inline-add-form" id="responseForm">
+            <textarea id="responseText" placeholder="Your answer..." style="min-height: 80px;"></textarea>
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="responseForm">Cancel</button>
+                <button class="btn-small primary" data-action="addResponse">Post Response</button>
+            </div>
+        </div>
+        <div class="response-thread">
+    `;
+
+    week.question.responses.forEach(response => {
+        html += `
+            <div class="response-item">
+                <div class="response-author">
+                    <div class="user-avatar" style="background: ${state.userColors[response.user]}; width: 24px; height: 24px; font-size: 0.75rem; display: inline-flex; margin-right: 0.5rem;">${response.user.charAt(0)}</div>
+                    ${response.user}
+                </div>
+                <div class="response-text">${response.text}</div>
+                <div class="agenda-item-actions">
+                    <button class="action-btn" data-action="addResponseReaction" data-id="${response.id}" data-value="👍">👍</button>
+                    <button class="action-btn" data-action="addResponseReaction" data-id="${response.id}" data-value="❤️">❤️</button>
+                    <button class="action-btn" data-action="addResponseReaction" data-id="${response.id}" data-value="😂">😂</button>
+                    ${response.user === state.currentUser ? `
+                        <button class="action-btn" data-action="deleteResponse" data-id="${response.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    ` : ''}
+                </div>
+                ${Object.keys(response.reactions || {}).length > 0 ? `
+                    <div class="emoji-reactions">
+                        ${Object.entries(response.reactions).map(([emoji, users]) => `
+                            <span class="reaction" data-users="${users.join(', ')}">${emoji} ${users.length}</span>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                <div class="comments">
+                    ${(response.comments || []).map(comment => `
+                        <div class="comment">
+                            <span class="comment-author">${comment.user}:</span> ${comment.text}
+                        </div>
+                    `).join('')}
+                    <div class="comment-input">
+                        <input type="text" placeholder="Add a comment..." id="response-comment-${response.id}">
+                        <button class="btn-primary" data-action="addResponseComment" data-id="${response.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    
+    document.getElementById('responsesContent').innerHTML = html;
+    document.getElementById('currentQuestion').textContent = week.question.text;
+}
+
+function generateQuestion() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    if (!week) return;
+
+    week.question = {
+        text: state.questions[Math.floor(Math.random() * state.questions.length)],
+        responses: []
+    };
+    saveData();
+    renderWhoKnew();
+}
+
+function addResponse() {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const text = document.getElementById('responseText').value.trim();
+    
+    if (!text) return;
+
+    week.question.responses.push({
+        id: Date.now(),
+        user: state.currentUser,
+        text,
+        reactions: {},
+        comments: []
+    });
+    
+    saveData();
+    renderWhoKnew();
+}
+
+function addResponseReaction(id, emoji) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const response = week.question.responses.find(r => r.id === id);
+    if (!response.reactions[emoji]) {
+        response.reactions[emoji] = [];
+    }
+    if (!response.reactions[emoji].includes(state.currentUser)) {
+        response.reactions[emoji].push(state.currentUser);
+    }
+    saveData();
+    renderWhoKnew();
+}
+
+function addResponseComment(id) {
+    const week = state.data.weeks.find(w => w.id === state.currentWeek);
+    const response = week.question.responses.find(r => r.id === id);
+    const input = document.getElementById(`response-comment-${id}`);
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    if (!response.comments) {
+        response.comments = [];
+    }
+
+    response.comments.push({
+        user: state.currentUser,
+        text,
+        timestamp: Date.now()
+    });
+    saveData();
+    renderWhoKnew();
+}
+
+function deleteResponse(id) {
+    showConfirmDialog('Delete your response?', function() {
+        const week = state.data.weeks.find(w => w.id === state.currentWeek);
+        if (week && week.question) {
+            week.question.responses = week.question.responses.filter(r => r.id !== id);
+            saveData();
+            renderWhoKnew();
+        }
+    });
+}
+
+// Links functions
+function renderLinks() {
+    const links = state.data.links[state.currentLinkSubTab] || [];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="linkForm">
+            <span>+</span>
+            <span>Add Resource</span>
+        </button>
+        <div class="inline-add-form" id="linkForm">
+            <input type="text" id="linkTitle" placeholder="Resource title">
+            <textarea id="linkDescription" placeholder="Description" style="min-height: 60px;"></textarea>
+            <input type="text" id="linkUrls" placeholder="https://example.com, https://another.com">
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="linkForm">Cancel</button>
+                <button class="btn-small primary" data-action="addResource">Add Resource</button>
+            </div>
+        </div>
+        <div id="linksContainer">
+    `;
+
+    links.forEach((link, index) => {
+        html += `
+            <div class="resource-item" draggable="true" data-link-id="${link.id}" data-index="${index}">
+                <div class="resource-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="cursor: move;">☰</span>
+                    ${link.title}
+                </div>
+                <div class="agenda-item-description">${link.description}</div>
+                <div class="agenda-item-links" style="margin-top: 0.75rem;">
+                    ${link.urls.map(url => `<a href="${url.startsWith('http') ? url : 'https://' + url}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 Link</a>`).join('')}
+                </div>
+                <div class="agenda-item-actions" style="margin-top: 1rem;">
+                    <button class="action-btn" data-action="editResource" data-id="${link.id}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button class="action-btn" data-action="deleteResource" data-id="${link.id}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    
+    document.getElementById('linksContent').innerHTML = html;
+    setupDragAndDrop();
+}
+
+function setupDragAndDrop() {
+    const container = document.getElementById('linksContainer');
+    if (!container) return;
+    
+    const items = container.querySelectorAll('.resource-item');
+    
+    items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragleave', handleDragLeave);
+    });
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.resource-item').forEach(item => {
+        item.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    if (draggedElement !== this) {
+        const draggedId = parseInt(draggedElement.getAttribute('data-link-id'));
+        const targetId = parseInt(this.getAttribute('data-link-id'));
+        
+        const links = state.data.links[state.currentLinkSubTab];
+        const draggedIndex = links.findIndex(l => l.id === draggedId);
+        const targetIndex = links.findIndex(l => l.id === targetId);
+        
+        // Remove dragged item and insert at new position
+        const [draggedItem] = links.splice(draggedIndex, 1);
+        links.splice(targetIndex, 0, draggedItem);
+        
+        saveData();
+        renderLinks();
+    }
+    
+    return false;
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function addResource() {
+    const title = document.getElementById('linkTitle').value.trim();
+    const description = document.getElementById('linkDescription').value.trim();
+    const urls = document.getElementById('linkUrls').value.split(',').map(u => u.trim()).filter(u => u);
+    
+    if (!title || !urls.length) return;
+
+    if (!state.data.links[state.currentLinkSubTab]) {
+        state.data.links[state.currentLinkSubTab] = [];
+    }
+    
+    state.data.links[state.currentLinkSubTab].push({
+        id: Date.now(),
+        title,
+        description,
+        urls
+    });
+    
+    saveData();
+    renderLinks();
+}
+
+function editResource(id) {
+    const resource = state.data.links[state.currentLinkSubTab].find(l => l.id === id);
+    
+    document.getElementById('genericModalTitle').textContent = 'Edit Resource';
+    document.getElementById('genericModalContent').innerHTML = `
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="editResourceTitle" value="${resource.title}">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="editResourceDescription">${resource.description}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Links (comma-separated)</label>
+            <input type="text" id="editResourceUrls" value="${resource.urls.join(', ')}">
+        </div>
+        <button class="btn-primary" data-action="saveResourceEdit" data-id="${id}">Save Changes</button>
+    `;
+    document.getElementById('genericModal').classList.add('active');
+}
+
+function saveResourceEdit(id) {
+    const resource = state.data.links[state.currentLinkSubTab].find(l => l.id === id);
+    resource.title = document.getElementById('editResourceTitle').value;
+    resource.description = document.getElementById('editResourceDescription').value;
+    resource.urls = document.getElementById('editResourceUrls').value.split(',').map(u => u.trim()).filter(u => u);
+    saveData();
+    renderLinks();
+    closeModal('genericModal');
+}
+
+function deleteResource(id) {
+    showConfirmDialog('Delete this resource?', function() {
+        state.data.links[state.currentLinkSubTab] = state.data.links[state.currentLinkSubTab].filter(l => l.id !== id);
+        saveData();
+        renderLinks();
+    });
+}
+
+// Reviews functions
+function renderReviews() {
+    const statuses = ['Ready to Review', 'In Review', 'Reviewed/Rework', 'Approved'];
+    
+    let html = `
+        <button class="quick-add-btn" data-action="toggleForm" data-value="reviewForm">
+            <span>+</span>
+            <span>Submit for Review</span>
+        </button>
+        <div class="inline-add-form" id="reviewForm">
+            <input type="text" id="reviewProjectName" placeholder="Project name">
+            <textarea id="reviewDescription" placeholder="Description" style="min-height: 60px;"></textarea>
+            <input type="text" id="reviewLinks" placeholder="Links (comma-separated)">
+            <input type="date" id="reviewDate">
+            <div class="inline-form-actions">
+                <button class="btn-small secondary" data-action="closeForm" data-value="reviewForm">Cancel</button>
+                <button class="btn-small primary" data-action="submitReview">Submit for Review</button>
+            </div>
+        </div>
+        <button class="btn-archive-toggle" data-action="viewArchive">
+            📁 View Archive
+        </button>
+    `;
+
+    statuses.forEach(status => {
+        const tickets = state.data.reviews.filter(r => r.status === status && !r.archived);
+        if (tickets.length === 0) return;
+
+        html += `<h3 style="margin: 2rem 0 1rem 0; color: var(--primary);">${status}</h3>`;
+        tickets.forEach(ticket => {
+            html += `
+                <div class="ticket">
+                    <div class="ticket-header">
+                        <div>
+                            <div class="ticket-title">${ticket.projectName}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem;">
+                                By ${ticket.user} | Due: ${new Date(ticket.neededBy).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <span class="ticket-status">${status}</span>
+                    </div>
+                    <div class="agenda-item-description" style="margin: 1rem 0;">${ticket.description}</div>
+                    ${ticket.links && ticket.links.length > 0 ? `
+                        <div class="agenda-item-links">
+                            ${ticket.links.map(link => `<a href="${link.startsWith('http') ? link : 'https://' + link}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 Link</a>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${ticket.comments && ticket.comments.length > 0 ? `
+                        <div class="comments" style="margin-top: 1rem;">
+                            ${ticket.comments.map(comment => `
+                                <div class="comment">
+                                    <span class="comment-author">${comment.user}:</span> ${comment.text}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="comment-input" style="margin-top: 1rem;">
+                        <input type="text" placeholder="Add a comment..." id="review-comment-${ticket.id}">
+                        <button class="btn-primary" data-action="addReviewComment" data-id="${ticket.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </button>
+                    </div>
+                    <div class="agenda-item-actions" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        ${state.currentUser === 'Josh' ? `
+                            <select data-review-id="${ticket.id}" style="padding: 0.5rem; border: 2px solid var(--border); border-radius: 8px; margin-right: 0.5rem;">
+                                <option value="">Change Status...</option>
+                                <option value="Ready to Review">Ready to Review</option>
+                                <option value="In Review">In Review</option>
+                                <option value="Reviewed/Rework">Reviewed/Rework</option>
+                                <option value="Approved">Approved</option>
+                            </select>
+                        ` : ''}
+                        <button class="action-btn" data-action="archiveReview" data-id="${ticket.id}">📁 Archive</button>
+                        <button class="action-btn" data-action="deleteReview" data-id="${ticket.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    document.getElementById('reviewsContent').innerHTML = html;
+}
+
+function submitReview() {
+    const projectName = document.getElementById('reviewProjectName').value.trim();
+    const description = document.getElementById('reviewDescription').value.trim();
+    const links = document.getElementById('reviewLinks').value.split(',').map(l => l.trim()).filter(l => l);
+    const neededBy = document.getElementById('reviewDate').value;
+    
+    if (!projectName || !description || !neededBy) return;
+
+    state.data.reviews.push({
+        id: Date.now(),
+        user: state.currentUser,
+        projectName,
+        description,
+        links,
+        neededBy,
+        status: 'Ready to Review',
+        comments: [],
+        archived: false
+    });
+    
+    saveData();
+    renderReviews();
+}
+
+function updateReviewStatus(id, status) {
+    if (!status) return;
+    const review = state.data.reviews.find(r => r.id === id);
+    if (review) {
+        review.status = status;
+        saveData();
+        renderReviews();
+    }
+}
+
+function addReviewComment(id) {
+    const review = state.data.reviews.find(r => r.id === id);
+    const input = document.getElementById(`review-comment-${id}`);
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    if (!review.comments) {
+        review.comments = [];
+    }
+
+    review.comments.push({
+        user: state.currentUser,
+        text,
+        timestamp: Date.now()
+    });
+    saveData();
+    renderReviews();
+}
+
+function archiveReview(id) {
+    const review = state.data.reviews.find(r => r.id === id);
+    if (review) {
+        review.archived = !review.archived;
+        saveData();
+        
+        if (document.getElementById('genericModal').classList.contains('active')) {
+            viewArchive();
+        } else {
+            renderReviews();
+        }
+    }
+}
+
+function deleteReview(id) {
+    showConfirmDialog('Delete this review request?', function() {
+        state.data.reviews = state.data.reviews.filter(r => r.id !== id);
+        saveData();
+        
+        if (document.getElementById('genericModal').classList.contains('active')) {
+            viewArchive();
+        } else {
+            renderReviews();
+        }
+    });
+}
+
+function viewArchive() {
+    const archived = state.data.reviews.filter(r => r.archived);
+    
+    document.getElementById('genericModalTitle').textContent = 'Archived Reviews';
+    
+    if (archived.length === 0) {
+        document.getElementById('genericModalContent').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">No archived reviews</p>';
+    } else {
+        let html = '';
+        archived.forEach(ticket => {
+            html += `
+                <div class="ticket" style="margin-bottom: 1rem; opacity: 0.9;">
+                    <div class="ticket-header">
+                        <div>
+                            <div class="ticket-title">${ticket.projectName}</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem;">
+                                By ${ticket.user} | ${ticket.status}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="agenda-item-description" style="margin: 1rem 0;">${ticket.description}</div>
+                    <div class="agenda-item-actions" style="margin-top: 1rem;">
+                        <button class="action-btn" data-action="archiveReview" data-id="${ticket.id}">📂 Unarchive</button>
+                        <button class="action-btn" data-action="deleteReview" data-id="${ticket.id}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('genericModalContent').innerHTML = html;
+    }
+    
+    document.getElementById('genericModal').classList.add('active');
+}
+
+// Search functions
+function performSearch() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!query) return;
+
+    const results = [];
+
+    state.data.weeks.forEach(week => {
+        Object.entries(week.agenda).forEach(([category, items]) => {
+            items.forEach(item => {
+                if (item.title.toLowerCase().includes(query) || 
+                    (item.description && item.description.toLowerCase().includes(query))) {
+                    results.push({
+                        type: 'Agenda',
+                        week: week.date,
+                        weekId: week.id,
+                        category,
+                        itemId: item.id,
+                        title: item.title,
+                        context: item.description
+                    });
+                }
+            });
+        });
+
+        Object.entries(week.reporting).forEach(([user, report]) => {
+            if (report.text.toLowerCase().includes(query)) {
+                results.push({
+                    type: 'Report',
+                    week: week.date,
+                    weekId: week.id,
+                    user: user,
+                    title: `${user}'s Report`,
+                    context: report.text.substring(0, 100) + '...'
+                });
+            }
+        });
+
+        if (week.question) {
+            week.question.responses.forEach(response => {
+                if (response.text.toLowerCase().includes(query)) {
+                    results.push({
+                        type: 'Response',
+                        week: week.date,
+                        weekId: week.id,
+                        itemId: response.id,
+                        title: `${response.user}'s response`,
+                        context: response.text.substring(0, 100) + '...'
+                    });
+                }
+            });
+        }
+    });
+
+    // Search all link categories
+    Object.entries(state.data.links).forEach(([category, links]) => {
+        links.forEach(link => {
+            if (link.title.toLowerCase().includes(query) || 
+                link.description.toLowerCase().includes(query)) {
+                results.push({
+                    type: 'Resource',
+                    category: category,
+                    itemId: link.id,
+                    title: link.title,
+                    context: link.description
+                });
+            }
+        });
+    });
+
+    state.data.reviews.forEach(review => {
+        if (review.projectName.toLowerCase().includes(query) || 
+            review.description.toLowerCase().includes(query)) {
+            results.push({
+                type: 'Review',
+                itemId: review.id,
+                archived: review.archived,
+                title: review.projectName,
+                context: review.description
+            });
+        }
+    });
+
+    displaySearchResults(results);
+}
+
+function displaySearchResults(results) {
+    let html = '';
+    
+    if (results.length === 0) {
+        html = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">No results found</p>';
+    } else {
+        results.forEach((result, index) => {
+            const archivedLabel = result.archived ? ' (Archived)' : '';
+            html += `
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;" data-action="navigateSearch" data-id="${index}">
+                    <div style="font-weight: 600; color: var(--primary);">${result.type}${result.week ? ` - Week of ${new Date(result.week).toLocaleDateString()}` : ''}${archivedLabel}</div>
+                    <div style="font-weight: 600; margin-top: 0.25rem;">${result.title}</div>
+                    ${result.context ? `<div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem;">${result.context}</div>` : ''}
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('searchResults').innerHTML = html;
+    window.searchResultsData = results;
+    document.getElementById('searchModal').classList.add('active');
+}
+
+function navigateToResult(index) {
+    const result = window.searchResultsData[index];
+    
+    if (result.weekId) {
+        state.currentWeek = result.weekId;
+        renderWeeks();
+    }
+    
+    closeModal('searchModal');
+    
+    switch(result.type) {
+        case 'Agenda':
+            state.currentTab = 'agenda';
+            state.currentSubTab = result.category;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="agenda"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('agenda').classList.add('active');
+            renderAgenda();
+            setTimeout(() => highlightItem(result.itemId), 100);
+            break;
+        case 'Report':
+            state.currentTab = 'reporting';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="reporting"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('reporting').classList.add('active');
+            renderReporting();
+            setTimeout(() => {
+                const userSection = document.querySelector(`.user-section:has(.user-section-header:contains("${result.user}"))`);
+                if (userSection) {
+                    userSection.classList.add('highlight-item');
+                    userSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            break;
+        case 'Response':
+            state.currentTab = 'whoknew';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="whoknew"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('whoknew').classList.add('active');
+            renderWhoKnew();
+            setTimeout(() => highlightResponseItem(result.itemId), 100);
+            break;
+        case 'Resource':
+            state.currentTab = 'links';
+            state.currentLinkSubTab = result.category;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="links"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('links').classList.add('active');
+            renderLinks();
+            setTimeout(() => highlightResourceItem(result.itemId), 100);
+            break;
+        case 'Review':
+            state.currentTab = 'reviews';
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-value="reviews"]').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('reviews').classList.add('active');
+            if (result.archived) {
+                renderReviews();
+                setTimeout(() => viewArchive(), 100);
+                setTimeout(() => highlightArchivedReview(result.itemId), 200);
+            } else {
+                renderReviews();
+                setTimeout(() => highlightReviewItem(result.itemId), 100);
+            }
+            break;
+    }
+}
+
+function highlightItem(itemId) {
+    const agendaItems = document.querySelectorAll('.agenda-item');
+    agendaItems.forEach(item => {
+        const checkbox = item.querySelector(`[data-item-id="${itemId}"]`);
+        if (checkbox) {
+            item.classList.add('highlight-item');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => item.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightResponseItem(itemId) {
+    const responseItems = document.querySelectorAll('.response-item');
+    responseItems.forEach(item => {
+        const deleteBtn = item.querySelector(`[data-id="${itemId}"]`);
+        if (deleteBtn) {
+            item.classList.add('highlight-item');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => item.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightResourceItem(itemId) {
+    const resourceItems = document.querySelectorAll('.resource-item');
+    resourceItems.forEach(item => {
+        const editBtn = item.querySelector(`[data-action="editResource"][data-id="${itemId}"]`);
+        if (editBtn) {
+            item.classList.add('highlight-item');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => item.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightReviewItem(itemId) {
+    const tickets = document.querySelectorAll('.ticket');
+    tickets.forEach(ticket => {
+        const commentInput = ticket.querySelector(`#review-comment-${itemId}`);
+        if (commentInput) {
+            ticket.classList.add('highlight-item');
+            ticket.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => ticket.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+function highlightArchivedReview(itemId) {
+    const tickets = document.querySelectorAll('.ticket');
+    tickets.forEach(ticket => {
+        const archiveBtn = ticket.querySelector(`[data-action="archiveReview"][data-id="${itemId}"]`);
+        if (archiveBtn) {
+            ticket.classList.add('highlight-item');
+            ticket.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => ticket.classList.remove('highlight-item'), 1500);
+        }
+    });
+}
+
+// Utility functions
+function showConfirmDialog(message, onConfirm) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').classList.add('active');
+    window.pendingDeleteAction = onConfirm;
+}
+
+function downloadData() {
+    const dataStr = JSON.stringify(state.data, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `aiva-hub-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function uploadData(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                state.data = JSON.parse(e.target.result);
+                saveData();
+                renderWeeks();
+                renderContent();
+                alert('Data uploaded successfully!');
+            } catch (error) {
+                alert('Error uploading file. Please make sure it is a valid backup file.');
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// Initialize the app
+init();
+
+});
+    </script>
+</body>
+</html>
